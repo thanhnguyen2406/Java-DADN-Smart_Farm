@@ -12,8 +12,11 @@ public enum ErrorCode {
     UNAUTHENTICATED_USERNAME_PASSWORD(401, "Please check username or password again"),
     UNAUTHENTICATED_USERNAME(401, "Please check your username again"),
 
-    //404: Not found errors
-    USER_NOT_FOUND(400, "User not found");
+    //404: Resource not found errors
+    USER_NOT_FOUND(400, "User not found"),
+
+    //409: Resource existed errors
+    USER_EXISTED(409, "User existed");
 
     int code;
     String message;

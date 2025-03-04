@@ -20,6 +20,4 @@ public class Response {
     boolean authenticated;
 
     //DTO response
-    AuthenticateDTO authenticateDTO;
-    IntrospectDTO introspectDTO;
 }

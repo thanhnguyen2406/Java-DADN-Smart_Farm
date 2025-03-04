@@ -77,11 +77,11 @@ public class AuthenticateService implements IAuthenticateService {
     }
 
     private String generateToken(User user) {
-        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
+        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS256);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
-                .issuer("KienLe")
+                .issuer("SmartHomeApp")
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(2, ChronoUnit.HOURS).toEpochMilli()))
                 .jwtID(UUID.randomUUID().toString())
