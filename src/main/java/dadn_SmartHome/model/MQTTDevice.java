@@ -8,8 +8,9 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MQTTDevice {
     @Id
