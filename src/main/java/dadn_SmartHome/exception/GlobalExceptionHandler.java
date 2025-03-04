@@ -1,6 +1,6 @@
 package dadn_SmartHome.exception;
 
-import dadn_SmartHome.DTO.Response;
+import dadn_SmartHome.dto.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
