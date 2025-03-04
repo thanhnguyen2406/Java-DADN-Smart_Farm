@@ -1,0 +1,27 @@
+package dadn_SmartHome.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Entity
+@Data
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long id;
+
+    @Column(unique = true, nullable = false)
+    String username;
+
+    @Column(nullable = false)
+    String password;
+
+    @Column(nullable = false)
+    String name;
+}
