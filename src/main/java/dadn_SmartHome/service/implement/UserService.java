@@ -1,4 +1,4 @@
-package dadn_SmartHome.service.interf;
+package dadn_SmartHome.service.implement;
 
 import dadn_SmartHome.dto.Response;
 import dadn_SmartHome.dto.UserDTO.UserDTO;
@@ -7,8 +7,10 @@ import dadn_SmartHome.exception.ErrorCode;
 import dadn_SmartHome.mapper.UserMapper;
 import dadn_SmartHome.model.User;
 import dadn_SmartHome.repository.UserRepository;
-import dadn_SmartHome.service.imple.IUserService;
+import dadn_SmartHome.service.interf.IUserService;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;

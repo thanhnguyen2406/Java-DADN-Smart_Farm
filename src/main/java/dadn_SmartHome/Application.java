@@ -24,6 +24,7 @@ public class Application {
 			System.setProperty("SERVER_PORT", dotenv.get("SERVER_PORT", ""));
 			System.setProperty("SERVER_CONTEXT_PATH", dotenv.get("SERVER_CONTEXT_PATH", ""));
 			System.setProperty("JWT_SIGNER_KEY", dotenv.get("JWT_SIGNER_KEY", ""));
+			System.setProperty("X_AIO_KEY", dotenv.get("X_AIO_KEY", ""));
 		}
 
 		SpringApplication.run(Application.class, args);

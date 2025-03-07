@@ -1,11 +1,10 @@
 package dadn_SmartHome.model;
 
-import dadn_SmartHome.model.enums.LogType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -13,15 +12,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Log {
+public class Room {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
-    LogType logType;
-
-    @Column(nullable = false)
-    long data_id;
-
-    @Column(nullable = false)
-    String message;
+//    @Column(nullable = false)
+//            @JoinColumn()
+//    List<MQTTDevice> listDevices;
 }
