@@ -1,4 +1,4 @@
-package dadn_SmartHome.service.interf;
+package dadn_SmartHome.service.implement;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -12,7 +12,7 @@ import dadn_SmartHome.exception.AppException;
 import dadn_SmartHome.exception.ErrorCode;
 import dadn_SmartHome.model.User;
 import dadn_SmartHome.repository.UserRepository;
-import dadn_SmartHome.service.imple.IAuthenticateService;
+import dadn_SmartHome.service.interf.IAuthenticateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +32,7 @@ import java.util.UUID;
 public class AuthenticateService implements IAuthenticateService {
     private final UserRepository userRepository;
 
-    @Value("${jwt.signerKey}")
-    protected String SIGNER_KEY;
+    protected String SIGNER_KEY = System.getProperty("SIGNER_KEY");;
 
     @Override
     public Response authenticate(AuthenticateDTO request) {

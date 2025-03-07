@@ -1,6 +1,5 @@
-package dadn_SmartHome.service.imple;
+package dadn_SmartHome.service.interf;
 
-import com.nimbusds.jose.JOSEException;
 import dadn_SmartHome.dto.Response;
 import dadn_SmartHome.dto.UserDTO.UserDTO;
 

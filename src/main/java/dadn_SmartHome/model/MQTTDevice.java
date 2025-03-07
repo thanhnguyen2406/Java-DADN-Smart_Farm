@@ -22,4 +22,10 @@ public class MQTTDevice {
 
     @Column(nullable = false)
     DeviceStatus status;
+
+    @Column(nullable = false)
+    String feed;
+
+    @Column(nullable = false)
+    String ioKey;
 }

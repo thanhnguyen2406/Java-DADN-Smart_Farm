@@ -3,8 +3,12 @@ package dadn_SmartHome.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import dadn_SmartHome.dto.AuthenticateDTO.AuthenticateDTO;
 import dadn_SmartHome.dto.AuthenticateDTO.IntrospectDTO;
+import dadn_SmartHome.model.DataInfo;
+import dadn_SmartHome.service.implement.DataInfoService;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,4 +24,9 @@ public class Response {
     boolean authenticated;
 
     //DTO response
+
+    //Data of feed
+    DataInfo dataInfo;
+    List<DataInfo> listData;
+
 }
