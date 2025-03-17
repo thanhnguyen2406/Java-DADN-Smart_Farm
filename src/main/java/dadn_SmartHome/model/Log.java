@@ -20,7 +20,7 @@ public class Log {
     LogType logType;
 
     @Column(nullable = false)
-    long data_id;
+    long device_id;
 
     @Column(nullable = false)
     String message;

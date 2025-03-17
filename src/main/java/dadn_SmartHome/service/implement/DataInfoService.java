@@ -6,10 +6,8 @@ import dadn_SmartHome.dto.Response;
 import dadn_SmartHome.mapper.DataMapper;
 import dadn_SmartHome.model.DataInfo;
 import dadn_SmartHome.service.interf.IDataInfoService;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Value;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,8 +19,13 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class DataInfoService implements IDataInfoService {
     private final DataMapper dataMapper;
+//    private final MqttService mqttService;
 
     protected String X_AIO_KEY = System.getProperty("X_AIO_KEY");
+
+//    public void startMqttListener() {
+//        new Thread(MqttService::new).start();
+//    }
 
     @Override
     public Response getAllData(String url) {

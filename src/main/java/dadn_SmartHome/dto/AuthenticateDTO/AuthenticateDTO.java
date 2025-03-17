@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthenticateDTO {
     @NotBlank(message = "Username can not be empty")
-    String username;
+    String email;
 
     @NotBlank(message = "Password can not be empty")
     String password;

@@ -17,7 +17,6 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
-//    @Column(nullable = false)
-//            @JoinColumn()
-//    List<MQTTDevice> listDevices;
+    @Column(nullable = false)
+    List<String> listDevicesId;
 }

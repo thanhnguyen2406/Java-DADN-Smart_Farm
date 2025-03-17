@@ -16,7 +16,7 @@ public class User {
     long id;
 
     @Column(unique = true, nullable = false)
-    String username;
+    String email;
 
     @Column(nullable = false)
     String password;

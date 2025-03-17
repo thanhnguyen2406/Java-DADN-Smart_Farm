@@ -25,7 +25,7 @@ public class UserService implements IUserService {
 
     @Override
     public Response registerUser(UserDTO request) {
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
