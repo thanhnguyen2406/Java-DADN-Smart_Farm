@@ -19,7 +19,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class DataInfoService implements IDataInfoService {
     private final DataMapper dataMapper;
-    private final MqttService mqttService;
+//    private final MqttService mqttService;
 
     protected String X_AIO_KEY = System.getProperty("X_AIO_KEY");
 

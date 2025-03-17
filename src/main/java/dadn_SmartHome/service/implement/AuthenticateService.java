@@ -32,13 +32,14 @@ import java.util.UUID;
 public class AuthenticateService implements IAuthenticateService {
     private final UserRepository userRepository;
 
-    protected String SIGNER_KEY = System.getProperty("SIGNER_KEY");;
+    @Value("${JWT_SIGNER_KEY}")
+    private String signerKey;
 
     @Override
     public Response authenticate(AuthenticateDTO request) {
         String sanitizedUsername = request.getEmail().trim();
 
-        User user = userRepository.findByUsername(sanitizedUsername)
+        User user = userRepository.findByEmail(sanitizedUsername)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(5);
@@ -60,7 +61,7 @@ public class AuthenticateService implements IAuthenticateService {
     @Override
     public Response introspect(IntrospectDTO request) throws ParseException, JOSEException {
         String token = request.getToken();
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+        JWSVerifier verifier = new MACVerifier(signerKey.getBytes());
         SignedJWT signedJWT = SignedJWT.parse(token);
 
         Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
@@ -91,7 +92,7 @@ public class AuthenticateService implements IAuthenticateService {
         JWSObject jwsObject = new JWSObject(jwsHeader, payload);
 
         try {
-            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            jwsObject.sign(new MACSigner(signerKey.getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {
             log.error("Cannot create token", e);
