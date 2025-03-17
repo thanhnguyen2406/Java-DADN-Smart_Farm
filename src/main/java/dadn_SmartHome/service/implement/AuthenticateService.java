@@ -36,7 +36,7 @@ public class AuthenticateService implements IAuthenticateService {
 
     @Override
     public Response authenticate(AuthenticateDTO request) {
-        String sanitizedUsername = request.getUsername().trim();
+        String sanitizedUsername = request.getEmail().trim();
 
         User user = userRepository.findByUsername(sanitizedUsername)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -79,7 +79,7 @@ public class AuthenticateService implements IAuthenticateService {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS256);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getUsername())
+                .subject(user.getEmail())
                 .issuer("SmartHomeApp")
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(2, ChronoUnit.HOURS).toEpochMilli()))
