@@ -24,4 +24,7 @@ public class Log {
 
     @Column(nullable = false)
     String message;
+
+    @Column(nullable = true)
+    String value;
 }
