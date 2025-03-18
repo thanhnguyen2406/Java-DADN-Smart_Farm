@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DataMapper {
-    public DataInfoDTO toDataInfoDTO(DataDTO dataDTO) {
+    public DataInfoDTO toDataInfoDTO(DataDTO dto) {
         return DataInfoDTO.builder()
-                .value(dataDTO.getValue())
-                .feed_id(dataDTO.getFeed_id())
-                .feed_key(dataDTO.getFeed_key())
+                .value(dto.getValue())
+                .feed_id(dto.getFeed_id())
+                .feed_key(dto.getFeed_key())
                 .build();
     }
 }

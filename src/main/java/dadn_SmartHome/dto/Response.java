@@ -24,9 +24,9 @@ public class Response {
     boolean authenticated;
 
     //DTO response
-
-    //Data of feed
     DataInfo dataInfo;
     List<DataInfo> listData;
 
+    //Encode device
+    String encodedFeeds;
 }

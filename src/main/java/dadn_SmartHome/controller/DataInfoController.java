@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/data")
 @RequiredArgsConstructor
-public class DataController {
+public class DataInfoController {
     private final IDataInfoService dataInfoService;
 
     @GetMapping("/all")
