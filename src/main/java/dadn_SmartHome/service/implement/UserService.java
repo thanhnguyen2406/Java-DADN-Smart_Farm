@@ -28,6 +28,10 @@ public class UserService implements IUserService {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
+        String sanitizedUsername = request.getEmail().trim();
+        if (!sanitizedUsername.endsWith("@gmail.com")) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED_USERNAME_DOMAIN);
+        }
 
         User user = userMapper.toUser(request);
 

@@ -19,7 +19,7 @@ public class DataController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
-    @GetMapping()
+    @GetMapping("/latest")
     public ResponseEntity<Response> getLatestData(@RequestHeader String url) {
         Response response = dataInfoService.getLatestData(url);
         return ResponseEntity.status(response.getCode()).body(response);

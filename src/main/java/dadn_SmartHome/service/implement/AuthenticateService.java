@@ -38,6 +38,9 @@ public class AuthenticateService implements IAuthenticateService {
     @Override
     public Response authenticate(AuthenticateDTO request) {
         String sanitizedUsername = request.getEmail().trim();
+        if (!sanitizedUsername.endsWith("@gmail.com")) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED_USERNAME_DOMAIN);
+        }
 
         User user = userRepository.findByEmail(sanitizedUsername)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
