@@ -1,9 +1,10 @@
 package dadn_SmartHome.controller;
 
 import dadn_SmartHome.dto.DeviceDTO.DeviceDTO;
-import dadn_SmartHome.dto.Response;
+import dadn_SmartHome.dto.ResponseDTO.Response;
 import dadn_SmartHome.service.interf.IDeviceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/devices")
 @RequiredArgsConstructor
 public class DeviceController {
-    private final IDeviceService deviceService;
+    @Autowired
+    private IDeviceService deviceService;
 
     @PostMapping("/add")
     public ResponseEntity<Response> addDevice(@RequestBody DeviceDTO request) {

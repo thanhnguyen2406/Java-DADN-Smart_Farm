@@ -1,6 +1,6 @@
 package dadn_SmartHome.service.implement;
 
-import dadn_SmartHome.dto.Response;
+import dadn_SmartHome.dto.ResponseDTO.Response;
 import dadn_SmartHome.dto.UserDTO.UserDTO;
 import dadn_SmartHome.exception.AppException;
 import dadn_SmartHome.exception.ErrorCode;
@@ -11,7 +11,6 @@ import dadn_SmartHome.service.interf.IUserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

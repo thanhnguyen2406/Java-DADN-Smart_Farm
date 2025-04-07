@@ -7,7 +7,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import dadn_SmartHome.dto.AuthenticateDTO.AuthenticateDTO;
 import dadn_SmartHome.dto.AuthenticateDTO.IntrospectDTO;
-import dadn_SmartHome.dto.Response;
+import dadn_SmartHome.dto.ResponseDTO.Response;
 import dadn_SmartHome.exception.AppException;
 import dadn_SmartHome.exception.ErrorCode;
 import dadn_SmartHome.model.User;

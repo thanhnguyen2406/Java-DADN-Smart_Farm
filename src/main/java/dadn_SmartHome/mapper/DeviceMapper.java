@@ -1,13 +1,26 @@
 package dadn_SmartHome.mapper;
 
 import dadn_SmartHome.dto.DeviceDTO.DeviceDTO;
+import dadn_SmartHome.exception.AppException;
+import dadn_SmartHome.exception.ErrorCode;
 import dadn_SmartHome.model.Device;
+import dadn_SmartHome.model.Room;
+import dadn_SmartHome.repository.RoomRepository;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+@AllArgsConstructor
 @Component
 public class DeviceMapper {
+
+    private final RoomRepository roomRepository;
+
     public Device toDevice (DeviceDTO dto) {
+        Room room = roomRepository.findById(dto.getRoomId())
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
         return Device.builder()
+                .room(room)
                 .name(dto.getName())
                 .status(dto.getStatus())
                 .feedsList(dto.getFeedsList())

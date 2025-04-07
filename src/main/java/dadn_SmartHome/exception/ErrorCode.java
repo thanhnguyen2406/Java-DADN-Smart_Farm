@@ -1,6 +1,7 @@
 package dadn_SmartHome.exception;
 
 import lombok.AccessLevel;
+
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
@@ -19,10 +20,12 @@ public enum ErrorCode {
     //404: Resource not found errors
     USER_NOT_FOUND(404, "User not found"),
     DEVICE_NOT_FOUND(404, "Device not found"),
+    ROOM_NOT_FOUND(404, "Room not found"),
 
     //409: Resource existed errors
     USER_EXISTED(409, "User already existed"),
-    FEED_EXISTED(409, "Feed already existed");
+    FEED_EXISTED(409, "Feed already existed"),
+    ROOM_EXISTED(409, "Room already existed");
 
     int code;
     String message;
@@ -30,5 +33,13 @@ public enum ErrorCode {
     ErrorCode(int code, String message) {
         this.code = code;
         this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public int getCode() {
+        return code;
     }
 }

@@ -13,7 +13,8 @@ import java.util.Map;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DeviceDTO {
-    Long id;
+    long id;
+    long roomId;
     String name;
     DeviceStatus status;
     Map<String, Long> feedsList;

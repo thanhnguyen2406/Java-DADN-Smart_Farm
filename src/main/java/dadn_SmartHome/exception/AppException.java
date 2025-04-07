@@ -1,5 +1,11 @@
 package dadn_SmartHome.exception;
 
+import lombok.Getter;
+import lombok.Setter;
+
+
+@Getter
+@Setter
 public class AppException extends RuntimeException {
     private ErrorCode errorCode;
 
@@ -10,9 +16,5 @@ public class AppException extends RuntimeException {
 
     public ErrorCode getErrorCode() {
         return errorCode;
-    }
-
-    public void setErrorCode(ErrorCode errorCode) {
-        this.errorCode = errorCode;
     }
 }
