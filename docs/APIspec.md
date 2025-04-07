@@ -221,3 +221,84 @@
          "message": "Encoded device string is invalid"     
       }
       ```
+### Rooms APIs
+#### 1. Create new room
+- **URL**: `POST /smart-farm/room`
+- **Description**: Tạo mới trang trại cho trường hợp người dùng sở hữu nhiều trang trại khác nhau.
+- **RequestBody**:
+    ```json
+    {
+        "name": "vuon thanh long 3"
+    }
+    ```
+  - **Response**:
+    - `200 OK`: Create successfully
+      ```json
+      {
+          "code": 200,
+          "message": "Success",
+          "authenticated": true,
+          "id": 152,
+          "name": "vuon thanh long Tri An"
+      }
+      ```
+    - `409 Room already existed`
+    ```json
+      {
+            "code": 409,
+            "message": "Room already existed",
+            "authenticated": false
+      }
+    ```
+#### 2. Get rooms
+- **URL**: `GET /smart-farm/room`
+- **Description**: Lấy ra toàn bộ danh sách các trang trại đang quản lí
+- **RequestBody**:
+```json
+{
+  "code": 200,
+  "message": "Success",
+  "authenticated": true,
+  "listRoom": [
+    {
+      "roomId": 52,
+      "roomName": "vuon thanh long Bien Hoa"
+    },
+    {
+      "roomId": 53,
+      "roomName": "vuon thanh long Binh Thuan"
+    },
+    {
+      "roomId": 102,
+      "roomName": "vuon thanh long 3"
+    },
+    {
+      "roomId": 152,
+      "roomName": "vuon thanh long Tri An"
+    }
+  ]
+}
+```
+#### 3. Update name
+- **URL**: `PUT /smart-farm/room/update-name`
+- **Description**: Đổi tên trang trại
+- **RequestBody**:
+```json
+{
+    "id": "52",
+    "name": "vuon thanh long Tinh Doi"
+}
+```
+- **Response**:
+```json
+{
+    "code": 200,
+    "message": "Success",
+    "authenticated": true,
+    "roomId": 52,
+    "name": "vuon thanh long Tinh Doi"
+}
+```
+
+### Schedule APIs
+#### 1. Create schedule

@@ -35,4 +35,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             "WHERE s.device.id = :deviceId " +
             "AND (s.scheduleType = 'DAILY' OR s.scheduleType = 'WEEKLY')")
     List<Schedule> findRecurringSchedules(@Param("deviceId") long deviceId);
+
+    List<Schedule> findByDeviceId(long deviceId);
+
+
 }

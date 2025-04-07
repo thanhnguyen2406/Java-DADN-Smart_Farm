@@ -21,11 +21,15 @@ public enum ErrorCode {
     USER_NOT_FOUND(404, "User not found"),
     DEVICE_NOT_FOUND(404, "Device not found"),
     ROOM_NOT_FOUND(404, "Room not found"),
+    SCHEDULE_NOT_FOUND(404, "Schedule not found"),
 
     //409: Resource existed errors
     USER_EXISTED(409, "User already existed"),
     FEED_EXISTED(409, "Feed already existed"),
-    ROOM_EXISTED(409, "Room already existed");
+    ROOM_EXISTED(409, "Room already existed"),
+
+    //4002: Bad Request / logic conflict
+    SCHEDULE_TIME_OVERLAP(4002, "Schedule time overlap");
 
     int code;
     String message;

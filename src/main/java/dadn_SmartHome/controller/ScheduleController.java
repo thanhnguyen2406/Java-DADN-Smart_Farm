@@ -2,6 +2,7 @@ package dadn_SmartHome.controller;
 
 import dadn_SmartHome.dto.ScheduleDTO.ScheduleRequestDTO.CreateScheduleRequest;
 import dadn_SmartHome.dto.ScheduleDTO.ScheduleResponse.CreateScheduleResponse;
+import dadn_SmartHome.dto.ScheduleDTO.ScheduleResponse.DeleteScheduleResponse;
 import dadn_SmartHome.dto.ScheduleDTO.ScheduleResponse.GetScheduleResponse;
 import dadn_SmartHome.service.implement.ScheduleService;
 import jakarta.validation.Valid;
@@ -36,5 +37,10 @@ public class ScheduleController {
         // Gọi service để tạo schedule và nhận về response
         CreateScheduleResponse response = scheduleService.CreateSchedule(createScheduleRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{scheduleId}")
+    public DeleteScheduleResponse deleteSchedule(@PathVariable long scheduleId) {
+        return scheduleService.DeleteSchedule(scheduleId);
     }
 }
