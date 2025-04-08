@@ -1,6 +1,7 @@
 package dadn_SmartHome.model;
 
 import dadn_SmartHome.model.enums.DeviceStatus;
+import dadn_SmartHome.model.enums.DeviceType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +29,10 @@ public class Device {
     @Column(nullable = false)
     DeviceStatus status;
 
+    @Column(nullable = false)
+    DeviceType type;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json", nullable = false, unique = true)
-    Map<String, Long> feedsList;
+    Map<String, FeedInfo> feedsList;
 }

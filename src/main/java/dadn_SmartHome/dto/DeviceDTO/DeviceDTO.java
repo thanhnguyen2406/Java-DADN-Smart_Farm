@@ -1,6 +1,8 @@
 package dadn_SmartHome.dto.DeviceDTO;
 
+import dadn_SmartHome.model.FeedInfo;
 import dadn_SmartHome.model.enums.DeviceStatus;
+import dadn_SmartHome.model.enums.DeviceType;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,6 +17,7 @@ import java.util.Map;
 public class DeviceDTO {
     Long id;
     String name;
+    DeviceType type;
     DeviceStatus status;
-    Map<String, Long> feedsList;
+    Map<String, FeedInfo> feedsList;
 }
