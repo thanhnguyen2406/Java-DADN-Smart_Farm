@@ -6,6 +6,9 @@ import dadn_SmartHome.exception.AppException;
 import dadn_SmartHome.exception.ErrorCode;
 import dadn_SmartHome.mapper.DeviceMapper;
 import dadn_SmartHome.model.Device;
+import dadn_SmartHome.model.FeedInfo;
+import dadn_SmartHome.model.enums.DeviceStatus;
+import dadn_SmartHome.model.enums.DeviceType;
 import dadn_SmartHome.repository.DeviceRepository;
 import dadn_SmartHome.service.interf.IDeviceService;
 import dadn_SmartHome.utils.FeedEncoder;
@@ -25,6 +28,7 @@ import java.util.Map;
 public class DeviceService implements IDeviceService {
     private final DeviceRepository deviceRepository;
     private final DeviceMapper deviceMapper;
+    private final MqttService mqttService;
 
     @Override
     public Response addDevice(DeviceDTO request) {
@@ -33,6 +37,11 @@ public class DeviceService implements IDeviceService {
             throw new AppException(ErrorCode.FEED_EXISTED);
         }
         deviceRepository.save(newDevice);
+
+        //Connect with MQTT
+        if (newDevice.getType() == DeviceType.SENSOR && newDevice.getStatus() == DeviceStatus.ACTIVE) {
+            mqttService.connectDevice(newDevice.getId(), newDevice.getFeedsList());
+        }
         return Response.builder()
                 .code(200)
                 .message("Device added successfully")
@@ -50,6 +59,15 @@ public class DeviceService implements IDeviceService {
             throw new AppException(ErrorCode.FEED_EXISTED);
         }
         deviceRepository.save(existingDevice);
+
+        //Connect with MQTT
+        if (existingDevice.getType() == DeviceType.SENSOR) {
+            if (existingDevice.getStatus() == DeviceStatus.ACTIVE) {
+                mqttService.connectDevice(existingDevice.getId(), existingDevice.getFeedsList());
+            } else if (existingDevice.getStatus() == DeviceStatus.INACTIVE) {
+                mqttService.disconnectDevice(existingDevice.getId());
+            }
+        }
         return Response.builder()
                 .code(200)
                 .message("Device updated successfully")
@@ -85,7 +103,7 @@ public class DeviceService implements IDeviceService {
         if (!FeedEncoder.isValidEncodedString(encodedFeeds)) {
             throw new AppException(ErrorCode.ENCODED_DEVICE_INVALID);
         }
-        Map<String, Long> feeds = FeedEncoder.decodeFeeds(encodedFeeds);
+        Map<String, FeedInfo> feeds = FeedEncoder.decodeFeeds(encodedFeeds);
         Device existingDevice = deviceRepository.findByFeedsList(feeds);
 
         var context = SecurityContextHolder.getContext();
@@ -100,7 +118,7 @@ public class DeviceService implements IDeviceService {
     }
 
     public boolean checkFeedsList(String typeService, Device device) {
-        Map<String, Long> currentFeeds = device.getFeedsList();
+        Map<String, FeedInfo> currentFeeds = device.getFeedsList();
 
         if (currentFeeds == null || currentFeeds.isEmpty()) {
             return false;
@@ -122,7 +140,7 @@ public class DeviceService implements IDeviceService {
             List<Device> otherDevices = deviceRepository.findByIdNot(device.getId());
 
             return otherDevices.stream().anyMatch(otherDevice -> {
-                Map<String, Long> otherFeeds = otherDevice.getFeedsList();
+                Map<String, FeedInfo> otherFeeds = otherDevice.getFeedsList();
                 return otherFeeds != null && otherFeeds.entrySet().stream()
                         .anyMatch(entry ->
                                 currentFeeds.containsKey(entry.getKey()) &&

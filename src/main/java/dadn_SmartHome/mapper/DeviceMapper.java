@@ -9,6 +9,7 @@ public class DeviceMapper {
     public Device toDevice (DeviceDTO dto) {
         return Device.builder()
                 .name(dto.getName())
+                .type(dto.getType())
                 .status(dto.getStatus())
                 .feedsList(dto.getFeedsList())
                 .build();
