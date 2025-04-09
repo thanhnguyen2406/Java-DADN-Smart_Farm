@@ -97,7 +97,7 @@
   ```json
   {
      "name": "Smart light",
-     "status": "ACTIVE",
+     "type": "SENSOR_TRIGGER",
      "feedsList": {
         "fan": 3023664
      }
