@@ -301,4 +301,228 @@
 ```
 
 ### Schedule APIs
-#### 1. Create schedule
+#### 1. Create schedule DAILY
+- **URL**: `POST /smart-farm/schedule/create`
+- **Description**: Dùng để đặt lịch cho một sự kiện cần diễn ra hằng ngày theo một thời gian cụ thể. Ví dụ: tưới cây hằng ngày,...
+- **RequestBody**:
+```json
+{
+  "id_device": 1,
+  "status": "ACTIVE",
+  "description": "Watering dragon fruit",
+  "scheduleType": "DAILY",
+  "time_from": "06:00",
+  "time_to": "07:00"
+}
+```
+- **Response**:
+  - `200`: Create successfully
+    ```json
+    {
+        "code": 200,
+        "message": "Success",
+        "authenticated": true,
+        "id_device": 1,
+        "status": "ACTIVE",
+        "description": "Watering dragon fruit",
+        "scheduleType": "DAILY",
+        "time_from": "06:00:00",
+        "time_to": "07:00:00"
+    }
+    ```
+  - `4002`: Schedule time overlap
+  ```json
+    {
+        "code": 4002,
+        "message": "Schedule time overlap",
+        "authenticated": false
+    }
+    ```
+#### 2. Create schedule WEEKLY
+- **URL**: `POST smart-farm/schedule/create`
+- **Description**: Dùng để đặt lịch cho một sự kiện cần diễn ra hằng tuần dựa vào ngày trong tuần, thời gian cụ thể.
+- **RequestBody**:
+```json
+{
+    "id_device": 1,
+    "status": "ACTIVE",
+    "description": "Fill water into the pump",
+    "scheduleType": "WEEKLY",
+    "weekDay": "THURSDAY",
+    "time_from": "06:00",
+    "time_to": "06:30"
+}
+```
+- **Response**
+  - `200` : Create successfully
+  ```json
+    {
+        "code": 200,
+        "message": "Success",
+        "authenticated": true,
+        "id_device": 1,
+        "status": "ACTIVE",
+        "description": "Fill water into the pump",
+        "scheduleType": "WEEKLY",
+        "weekDay": "THURSDAY",
+        "time_from": "06:00:00",
+        "time_to": "06:30:00"
+    }
+    ```
+  - `4002` : Schedule time overlap
+  ```json
+    {
+        "code": 4002,
+        "message": "Schedule time overlap",
+        "authenticated": false
+    }
+    ```
+
+#### 3. Create schedule ONCE
+- **URL**: `POST /smart-farm/schedule/create`
+- **Description**: Dùng để đặt các lịch đột xuất, không cố định.
+- **RequestBody**:
+```json
+{
+  "id_device": 1,
+  "status": "INACTIVE",
+  "description": "Turn off the fan",
+  "scheduleType": "ONCE",
+  "startDate": "2025-04-15",
+  "endDate": "2025-04-20",
+  "time_from": "17:00",
+  "time_to": "20:00"
+}
+```
+- **Response**
+  - `200`: create successfully
+  ```json
+    {
+        "code": 200,
+        "message": "Success",
+        "authenticated": true,
+        "id_device": 1,
+        "status": "INACTIVE",
+        "description": "Turn off the fan",
+        "scheduleType": "ONCE",
+        "startDate": "2025-04-15",
+        "endDate": "2025-04-20",
+        "time_from": "17:00:00",
+        "time_to": "20:00:00"
+    }
+    ```
+  - `4002`: schedule time overlap
+  ```json
+    {
+        "code": 4002,
+        "message": "Schedule time overlap",
+        "authenticated": false
+    }
+    ```
+#### 4. Get Schedule
+- **URL**: `GET /smart-farm/schedule?month={month}&year={year}&id_room={id_room}`
+- **Description**: Dùng để lấy ra toàn bộ schedule đã được hẹn trong 1 tháng cụ thể.
+- **Example**: `GET /smart-farm/schedule?month=4&year=2025&id_room=52`
+- **Response**
+```json
+{
+    "code": 200,
+    "message": "Success",
+    "authenticated": false,
+    "schedules": [
+        {
+            "id": 604,
+            "device": {
+                "id": 1,
+                "room": {
+                    "id": 52,
+                    "name": "vuon thanh long Tinh Doi",
+                    "email": "hieu@gmail.com"
+                },
+                "name": "Smart Sensor",
+                "userEmail": null,
+                "status": "ACTIVE",
+                "feedsList": {
+                    "humidity": 3023672,
+                    "temperature": 3023664
+                }
+            },
+            "status": "INACTIVE",
+            "description": "Turn off the fan",
+            "scheduleType": "ONCE",
+            "startDate": "2025-04-15",
+            "endDate": "2025-04-20",
+            "time_from": "17:00:00",
+            "time_to": "20:00:00"
+        },
+        {
+            "id": 602,
+            "device": {
+                "id": 1,
+                "room": {
+                    "id": 52,
+                    "name": "vuon thanh long Tinh Doi",
+                    "email": "hieu@gmail.com"
+                },
+                "name": "Smart Sensor",
+                "userEmail": null,
+                "status": "ACTIVE",
+                "feedsList": {
+                    "humidity": 3023672,
+                    "temperature": 3023664
+                }
+            },
+            "status": "ACTIVE",
+            "description": "Watering dragon fruit",
+            "scheduleType": "DAILY",
+            "time_from": "06:00:00",
+            "time_to": "07:00:00"
+        },
+        {
+            "id": 603,
+            "device": {
+                "id": 1,
+                "room": {
+                    "id": 52,
+                    "name": "vuon thanh long Tinh Doi",
+                    "email": "hieu@gmail.com"
+                },
+                "name": "Smart Sensor",
+                "userEmail": null,
+                "status": "ACTIVE",
+                "feedsList": {
+                    "humidity": 3023672,
+                    "temperature": 3023664
+                }
+            },
+            "status": "ACTIVE",
+            "description": "Fill water into the pump",
+            "scheduleType": "WEEKLY",
+            "weekDay": "THURSDAY",
+            "time_from": "06:00:00",
+            "time_to": "06:30:00"
+        }
+    ]
+}
+```
+#### 5. Delete Schedule
+- **URL**: `DELETE /smart-farm/schedule/{scheduleID}`
+- **Description**: Dùng để xóa lịch đã đặt dựa vào id của lịch đó.
+- **Example**: `DELETE /smart-farm/schedule/503`
+- **Response**
+  - `200`: delete successfully
+    ```json
+    {
+        "code": 200,
+        "message": "Success",
+        "authenticated": true
+    }
+    ```
+  - `404`: Schedule not found
+    ```json
+    {
+        "code": 404,
+        "message": "Schedule not found",
+        "authenticated": false
+    }
+    ```
