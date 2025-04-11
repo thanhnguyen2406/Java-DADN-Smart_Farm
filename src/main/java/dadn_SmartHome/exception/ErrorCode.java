@@ -29,6 +29,10 @@ public enum ErrorCode {
     ROOM_EXISTED(409, "Room already existed"),
 
     //4002: Bad Request / logic conflict
+    START_DATE_AFTER_END_DATE(4002, "Start date after end date"),
+    REQUEST_START_DATE_AND_END_DATE(4002, "Request start date and end date"),
+    REQUEST_START_TIME_BEFORE_END_TIME(4002, "Request start time before end time"),
+    REQUEST_WEEKDAY(4002, "Request weekday"),
     SCHEDULE_TIME_OVERLAP(4002, "Schedule time overlap");
 
     int code;

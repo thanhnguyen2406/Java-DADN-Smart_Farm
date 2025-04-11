@@ -380,7 +380,7 @@
 
 #### 3. Create schedule ONCE
 - **URL**: `POST /smart-farm/schedule/create`
-- **Description**: Dùng để đặt các lịch đột xuất, không cố định.
+- **Description**: Dùng để đặt các lịch đột xuất, không cố định. Ví dụ đặt lịch tưới nước khoảng từ 6h-7h từ ngày 21/4 - 23/4
 - **RequestBody**:
 ```json
 {
