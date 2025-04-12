@@ -29,9 +29,11 @@ public class Device {
 //    String userEmail;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     Status status;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     DeviceType type;
 
     @JdbcTypeCode(SqlTypes.JSON)

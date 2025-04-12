@@ -15,6 +15,7 @@ public class Log {
     @Id
     long id;
 
+    @Enumerated(EnumType.STRING)
     LogType logType;
 
     @Column(nullable = false)
