@@ -17,10 +17,10 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     List<Map<String, Long>> findAllFeeds();
     List<Device> findByIdNot(long id);
 
-    @Query("SELECT d.id from Device d where d.room.id = :roomId")
+    @Query("SELECT d.id from Device d where d.roomId = :roomId")
     Optional<List<Long>> findIdByRoomId(@Param("roomId") long roomId);
 
-    Device findByFeedsList(Map<String, FeedInfo> feedsList);
+//    Device findByFeedsList(Map<String, FeedInfo> feedsList);
 
     @Query(value = "SELECT COUNT(*) > 0 FROM device WHERE JSON_EXTRACT(feeds_list, CONCAT('$.', :feedKey)) IS NOT NULL", nativeQuery = true)
     long existsFeedKey(@Param("feedKey") String feedKey);

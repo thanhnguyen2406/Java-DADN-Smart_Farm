@@ -13,21 +13,20 @@ import java.util.Optional;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
-    @Query("SELECT CASE WHEN COUNT(r) > 0 " +
-            "THEN true ELSE false END " +
-            "FROM Room r " +
-            "WHERE r.id = :roomId " +
-            "AND r.email = :email ")
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END " +
+            "FROM Room r JOIN r.listUsername u " +
+            "WHERE r.id = :roomId AND u = :email")
     boolean existsByRoomIdAndEmail(@Param("roomId") Long roomId, @Param("email") String email);
 
-    @Query("select case when count(r) > 0 " +
-            "then true else false end " +
-            "from Room r " +
-            "where r.email = :email " +
-            "AND r.name = :roomName ")
-    Boolean existByEmailAndName(@Param("email") String email, @Param("roomName") String roomName);
+    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
+            "FROM Room r JOIN r.listUsername u " +
+            "WHERE u = :email AND r.name = :roomName")
+    Boolean existsByEmailAndName(@Param("email") String email, @Param("roomName") String roomName);
 
-    List<Room> getRoomsByEmail(String email);
+    @Query("SELECT r FROM Room r JOIN r.listUsername u WHERE u = :email")
+    List<Room> getRoomsByUsername(@Param("email") String email);
 
-    Optional<Room> findByIdAndEmail(Long id, String email);
+    @Query("SELECT r FROM Room r JOIN r.listUsername u " +
+            "WHERE r.id = :id AND u = :email")
+    Optional<Room> findByIdAndUsername(@Param("id") Long id, @Param("email") String email);
 }

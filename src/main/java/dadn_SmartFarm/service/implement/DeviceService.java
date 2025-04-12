@@ -93,36 +93,36 @@ public class DeviceService implements IDeviceService {
                 .build();
     }
 
-    @Override
-    public Response encodeDevice(long id) {
-        Device existingDevice = deviceRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
-        String encodedFeeds = FeedEncoder.encodeFeeds(existingDevice.getFeedsList());
-        return Response.builder()
-                .code(200)
-                .message("Device encoded successfully")
-                .encodedFeeds(encodedFeeds)
-                .build();
-    }
-
-    @Override
-    public Response assignDevice(String encodedFeeds) {
-        if (!FeedEncoder.isValidEncodedString(encodedFeeds)) {
-            throw new AppException(ErrorCode.ENCODED_DEVICE_INVALID);
-        }
-        Map<String, FeedInfo> feeds = FeedEncoder.decodeFeeds(encodedFeeds);
-        Device existingDevice = deviceRepository.findByFeedsList(feeds);
-
-        var context = SecurityContextHolder.getContext();
-        String email = context.getAuthentication().getName();
-
-        existingDevice.setUserEmail(email);
-        deviceRepository.save(existingDevice);
-        return Response.builder()
-                .code(200)
-                .message("Device has assigned successfully")
-                .build();
-    }
+//    @Override
+//    public Response encodeDevice(long id) {
+//        Device existingDevice = deviceRepository.findById(id)
+//                .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
+//        String encodedFeeds = FeedEncoder.encodeFeeds(existingDevice.getFeedsList());
+//        return Response.builder()
+//                .code(200)
+//                .message("Device encoded successfully")
+//                .encodedFeeds(encodedFeeds)
+//                .build();
+//    }
+//
+//    @Override
+//    public Response assignDevice(String encodedFeeds) {
+//        if (!FeedEncoder.isValidEncodedString(encodedFeeds)) {
+//            throw new AppException(ErrorCode.ENCODED_DEVICE_INVALID);
+//        }
+//        Map<String, FeedInfo> feeds = FeedEncoder.decodeFeeds(encodedFeeds);
+//        Device existingDevice = deviceRepository.findByFeedsList(feeds);
+//
+//        var context = SecurityContextHolder.getContext();
+//        String email = context.getAuthentication().getName();
+//
+//        existingDevice.setUserEmail(email);
+//        deviceRepository.save(existingDevice);
+//        return Response.builder()
+//                .code(200)
+//                .message("Device has assigned successfully")
+//                .build();
+//    }
 
     public boolean checkFeedsList(String typeService, Device device) {
         Map<String, FeedInfo> currentFeeds = device.getFeedsList();

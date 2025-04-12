@@ -31,15 +31,15 @@ public class DeviceController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
-    @GetMapping("/encode/{id}")
-    public ResponseEntity<Response> assignDevice(@PathVariable("id") long id) {
-        Response response = deviceService.encodeDevice(id);
-        return ResponseEntity.status(response.getCode()).body(response);
-    }
-
-    @GetMapping("/assign")
-    public ResponseEntity<Response> assignDevice(@RequestParam String encodedFeeds) {
-        Response response = deviceService.assignDevice(encodedFeeds);
-        return ResponseEntity.status(response.getCode()).body(response);
-    }
+//    @GetMapping("/encode/{id}")
+//    public ResponseEntity<Response> assignDevice(@PathVariable("id") long id) {
+//        Response response = deviceService.encodeDevice(id);
+//        return ResponseEntity.status(response.getCode()).body(response);
+//    }
+//
+//    @GetMapping("/assign")
+//    public ResponseEntity<Response> assignDevice(@RequestParam String encodedFeeds) {
+//        Response response = deviceService.assignDevice(encodedFeeds);
+//        return ResponseEntity.status(response.getCode()).body(response);
+//    }
 }
