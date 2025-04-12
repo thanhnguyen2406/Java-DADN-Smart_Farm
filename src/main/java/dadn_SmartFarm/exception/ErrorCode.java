@@ -20,6 +20,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(404, "User not found"),
     DEVICE_NOT_FOUND(404, "Device not found"),
     TRIGGER_NOT_FOUND(404, "Trigger not found"),
+    TRIGGER_DEVICE_NOT_FOUND(404, "Triggers for this device to be active is not found"),
     FEED_SENSOR_NOT_FOUND(404, "Feed sensor not found"),
     FEED_CONTROL_NOT_FOUND(404, "Feed control not found"),
 

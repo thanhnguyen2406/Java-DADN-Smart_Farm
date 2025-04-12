@@ -10,6 +10,7 @@ import dadn_SmartFarm.model.FeedInfo;
 import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.model.enums.DeviceType;
 import dadn_SmartFarm.repository.DeviceRepository;
+import dadn_SmartFarm.repository.DeviceTriggerRepository;
 import dadn_SmartFarm.service.interf.IDeviceService;
 import dadn_SmartFarm.utils.FeedEncoder;
 import lombok.AccessLevel;
@@ -18,6 +19,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,7 @@ import java.util.Map;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DeviceService implements IDeviceService {
     DeviceRepository deviceRepository;
+    DeviceTriggerRepository deviceTriggerRepository;
     DeviceMapper deviceMapper;
     MqttService mqttService;
 
@@ -58,9 +61,15 @@ public class DeviceService implements IDeviceService {
         deviceRepository.save(existingDevice);
 
         //Connect with MQTT
-        if (existingDevice.getType() == DeviceType.SENSOR_DATA) {
+        if (existingDevice.getType() == DeviceType.SENSOR_DATA || existingDevice.getType() == DeviceType.SENSOR_TRIGGER) {
             if (existingDevice.getStatus() == Status.ACTIVE) {
-                mqttService.connectDevice(existingDevice.getId(), existingDevice.getFeedsList());
+                if (existingDevice.getType() == DeviceType.SENSOR_TRIGGER) {
+                    List<String> feedKeys = new ArrayList<>(existingDevice.getFeedsList().keySet());
+                    if (!deviceTriggerRepository.existsBySensorFeedKeyIn(feedKeys)) {
+                        throw new AppException(ErrorCode.TRIGGER_DEVICE_NOT_FOUND);
+                    }
+                }
+                mqttService.connectDevice(existingDevice.getId(), existingDevice.getType(), existingDevice.getFeedsList());
             } else if (existingDevice.getStatus() == Status.INACTIVE) {
                 mqttService.disconnectDevice(existingDevice.getId());
             }

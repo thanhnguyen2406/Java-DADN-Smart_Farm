@@ -2,6 +2,7 @@ package dadn_SmartFarm.service.implement;
 
 import dadn_SmartFarm.model.Device;
 import dadn_SmartFarm.model.FeedInfo;
+import dadn_SmartFarm.model.enums.DeviceType;
 import dadn_SmartFarm.repository.DeviceRepository;
 import jakarta.annotation.PreDestroy;
 import lombok.AccessLevel;
@@ -37,7 +38,7 @@ public class MqttService {
         this.deviceRepository = deviceRepository;
     }
 
-    public void connectDevice(Long deviceId, Map<String, FeedInfo> feedsList) {
+    public void connectDevice(Long deviceId, DeviceType deviceType, Map<String, FeedInfo> feedsList) {
         if (deviceClients.containsKey(deviceId)) {
             log.warn("Device {} is already connected. Subscribing to new feeds.", deviceId);
             feedsList.forEach((feedKey, feedInfo) -> executorService.submit(() -> subscribeToFeed(deviceId, feedKey)));
@@ -139,7 +140,6 @@ public class MqttService {
 
             String topic = username + "/feeds/" + feedKey;
             client.subscribe(topic);
-            log.info("Device {} subscribed to {}", deviceId, topic);
         } catch (MqttException e) {
             log.error("Error subscribing device {} to feed {}: {}", deviceId, feedKey, e.getMessage());
         }

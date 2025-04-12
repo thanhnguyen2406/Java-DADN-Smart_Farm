@@ -15,5 +15,6 @@ public interface DeviceTriggerRepository extends JpaRepository<DeviceTrigger, Lo
             String controlFeedKey,
             String thresholdCondition
     );
+    boolean existsBySensorFeedKeyIn(List<String> sensorFeedKeys);
     Page<DeviceTrigger> findBySensorFeedKeyIn(List<String> sensorFeedKeys, Pageable pageable);
 }
