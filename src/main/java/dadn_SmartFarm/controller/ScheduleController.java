@@ -1,15 +1,14 @@
-package dadn_SmartHome.controller;
+package dadn_SmartFarm.controller;
 
-import dadn_SmartHome.dto.ScheduleDTO.ScheduleRequestDTO.CreateScheduleRequest;
-import dadn_SmartHome.dto.ScheduleDTO.ScheduleResponse.CreateScheduleResponse;
-import dadn_SmartHome.dto.ScheduleDTO.ScheduleResponse.DeleteScheduleResponse;
-import dadn_SmartHome.dto.ScheduleDTO.ScheduleResponse.GetScheduleResponse;
-import dadn_SmartHome.service.implement.ScheduleService;
+import dadn_SmartFarm.dto.ScheduleDTO.ScheduleRequestDTO.CreateScheduleRequest;
+import dadn_SmartFarm.dto.ScheduleDTO.ScheduleResponse.CreateScheduleResponse;
+import dadn_SmartFarm.dto.ScheduleDTO.ScheduleResponse.DeleteScheduleResponse;
+import dadn_SmartFarm.dto.ScheduleDTO.ScheduleResponse.GetScheduleResponse;
+import dadn_SmartFarm.service.implement.ScheduleService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,8 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/schedule")
 @RequiredArgsConstructor
 public class ScheduleController {
-    @Autowired
-    private ScheduleService scheduleService;
+    private final ScheduleService scheduleService;
 
     @GetMapping()
     @Validated

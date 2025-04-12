@@ -1,4 +1,4 @@
-package dadn_SmartHome.dto.RoomDTO.RoomDtoModel;
+package dadn_SmartFarm.dto.RoomDTO.RoomDtoModel;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

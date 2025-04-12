@@ -1,9 +1,9 @@
-package dadn_SmartHome.dto.ScheduleDTO.ScheduleResponse;
+package dadn_SmartFarm.dto.ScheduleDTO.ScheduleResponse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import dadn_SmartHome.model.enums.DeviceStatus;
-import dadn_SmartHome.model.enums.ScheduleType;
-import dadn_SmartHome.model.enums.WeekDay;
+import dadn_SmartFarm.model.enums.Status;
+import dadn_SmartFarm.model.enums.ScheduleType;
+import dadn_SmartFarm.model.enums.WeekDay;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
@@ -11,7 +11,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +24,7 @@ public class CreateScheduleResponse {
     boolean authenticated;
 
     long id_device;
-    DeviceStatus status;
+    Status status;
     String description;
 
     @Enumerated(EnumType.STRING)

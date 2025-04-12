@@ -1,9 +1,9 @@
-package dadn_SmartHome.service.interf;
+package dadn_SmartFarm.service.interf;
 
-import dadn_SmartHome.dto.RoomDTO.RoomRequest.UpdateRoomRequest;
-import dadn_SmartHome.dto.RoomDTO.RoomResponse.CreateRoomResponse;
-import dadn_SmartHome.dto.RoomDTO.RoomResponse.GetRoomResponse;
-import dadn_SmartHome.dto.RoomDTO.RoomResponse.UpdateRoomResponse;
+import dadn_SmartFarm.dto.RoomDTO.RoomRequest.UpdateRoomRequest;
+import dadn_SmartFarm.dto.RoomDTO.RoomResponse.CreateRoomResponse;
+import dadn_SmartFarm.dto.RoomDTO.RoomResponse.GetRoomResponse;
+import dadn_SmartFarm.dto.RoomDTO.RoomResponse.UpdateRoomResponse;
 
 
 public interface IRoomService {

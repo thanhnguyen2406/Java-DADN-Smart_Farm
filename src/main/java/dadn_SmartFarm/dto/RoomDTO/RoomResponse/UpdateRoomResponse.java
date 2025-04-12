@@ -1,17 +1,18 @@
-package dadn_SmartHome.dto.ScheduleDTO.ScheduleResponse;
+package dadn_SmartFarm.dto.RoomDTO.RoomResponse;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class DeleteScheduleResponse {
+public class UpdateRoomResponse {
     int code;
     String message;
     boolean authenticated;
+
+    long roomId;
+    String name;
 }

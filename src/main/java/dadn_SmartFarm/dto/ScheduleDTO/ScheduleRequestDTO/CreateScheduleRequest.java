@@ -1,18 +1,19 @@
-package dadn_SmartHome.dto.ScheduleDTO.ScheduleRequestDTO;
+package dadn_SmartFarm.dto.ScheduleDTO.ScheduleRequestDTO;
 
-import dadn_SmartHome.model.enums.DeviceStatus;
-import dadn_SmartHome.model.enums.ScheduleType;
-import dadn_SmartHome.model.enums.WeekDay;
+import dadn_SmartFarm.model.enums.Status;
+import dadn_SmartFarm.model.enums.ScheduleType;
+import dadn_SmartFarm.model.enums.WeekDay;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -20,7 +21,7 @@ import java.util.Date;
 public class CreateScheduleRequest {
     long id_device ;
 
-    DeviceStatus status;
+    Status status;
     String description;
 
     @Enumerated(EnumType.STRING)

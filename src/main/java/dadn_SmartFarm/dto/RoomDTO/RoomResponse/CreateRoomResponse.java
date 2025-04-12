@@ -1,13 +1,18 @@
-package dadn_SmartHome.dto.RoomDTO.RoomRequest;
+package dadn_SmartFarm.dto.RoomDTO.RoomResponse;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateRoomRequest {
+public class CreateRoomResponse {
+    int code;
+    String message;
+    boolean authenticated;
+
+    long id;
     String name;
 }

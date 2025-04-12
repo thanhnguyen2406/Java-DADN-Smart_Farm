@@ -1,11 +1,11 @@
 package dadn_SmartFarm.mapper;
 
-import dadn_SmartHome.dto.DeviceDTO.DeviceDTO;
-import dadn_SmartHome.exception.AppException;
-import dadn_SmartHome.exception.ErrorCode;
-import dadn_SmartHome.model.Device;
-import dadn_SmartHome.model.Room;
-import dadn_SmartHome.repository.RoomRepository;
+import dadn_SmartFarm.dto.DeviceDTO.DeviceDTO;
+import dadn_SmartFarm.exception.AppException;
+import dadn_SmartFarm.exception.ErrorCode;
+import dadn_SmartFarm.model.Device;
+import dadn_SmartFarm.model.Room;
+import dadn_SmartFarm.repository.RoomRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

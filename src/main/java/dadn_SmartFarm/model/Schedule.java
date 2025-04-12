@@ -1,9 +1,9 @@
-package dadn_SmartHome.model;
+package dadn_SmartFarm.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import dadn_SmartHome.model.enums.DeviceStatus;
-import dadn_SmartHome.model.enums.ScheduleType;
-import dadn_SmartHome.model.enums.WeekDay;
+import dadn_SmartFarm.model.enums.ScheduleType;
+import dadn_SmartFarm.model.enums.Status;
+import dadn_SmartFarm.model.enums.WeekDay;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -30,7 +30,7 @@ public class Schedule {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    DeviceStatus status;
+    Status status;
 
     String description;
 

@@ -1,11 +1,11 @@
-package dadn_SmartHome.mapper;
+package dadn_SmartFarm.mapper;
 
-import dadn_SmartHome.dto.ScheduleDTO.ScheduleRequestDTO.CreateScheduleRequest;
-import dadn_SmartHome.exception.AppException;
-import dadn_SmartHome.exception.ErrorCode;
-import dadn_SmartHome.model.Device;
-import dadn_SmartHome.model.Schedule;
-import dadn_SmartHome.repository.DeviceRepository;
+import dadn_SmartFarm.dto.ScheduleDTO.ScheduleRequestDTO.CreateScheduleRequest;
+import dadn_SmartFarm.exception.AppException;
+import dadn_SmartFarm.exception.ErrorCode;
+import dadn_SmartFarm.model.Device;
+import dadn_SmartFarm.model.Schedule;
+import dadn_SmartFarm.repository.DeviceRepository;
 import lombok.Builder;
 import org.springframework.stereotype.Component;
 

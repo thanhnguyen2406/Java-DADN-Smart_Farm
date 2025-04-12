@@ -1,6 +1,6 @@
-package dadn_SmartHome.repository;
+package dadn_SmartFarm.repository;
 
-import dadn_SmartHome.model.Schedule;
+import dadn_SmartFarm.model.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

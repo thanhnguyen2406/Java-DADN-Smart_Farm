@@ -1,4 +1,4 @@
-package dadn_SmartHome.dto.RoomDTO.RoomRequest;
+package dadn_SmartFarm.dto.RoomDTO.RoomRequest;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,7 +8,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UpdateRoomRequest {
-    long id;
+public class CreateRoomRequest {
     String name;
 }

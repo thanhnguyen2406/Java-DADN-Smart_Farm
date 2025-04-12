@@ -1,4 +1,4 @@
-package dadn_SmartHome.model.enums;
+package dadn_SmartFarm.model.enums;
 
 public enum ScheduleType {
     DAILY,

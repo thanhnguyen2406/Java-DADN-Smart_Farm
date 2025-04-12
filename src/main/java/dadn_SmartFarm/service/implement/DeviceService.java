@@ -1,4 +1,4 @@
-package dadn_SmartHome.service.implement;
+package dadn_SmartFarm.service.implement;
 
 import dadn_SmartFarm.dto.DeviceDTO.DeviceDTO;
 import dadn_SmartFarm.dto.Response;
@@ -11,6 +11,7 @@ import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.model.enums.DeviceType;
 import dadn_SmartFarm.repository.DeviceRepository;
 import dadn_SmartFarm.repository.DeviceTriggerRepository;
+import dadn_SmartFarm.service.implement.MqttService;
 import dadn_SmartFarm.service.interf.IDeviceService;
 import dadn_SmartFarm.utils.FeedEncoder;
 import lombok.AccessLevel;

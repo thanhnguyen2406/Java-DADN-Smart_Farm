@@ -1,7 +1,10 @@
-package dadn_SmartHome.dto.RoomDTO.RoomResponse;
+package dadn_SmartFarm.dto.RoomDTO.RoomResponse;
 
-import dadn_SmartHome.dto.RoomDTO.RoomDtoModel.RoomResponseInfo;
-import lombok.*;
+import dadn_SmartFarm.dto.RoomDTO.RoomDtoModel.RoomResponseInfo;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package dadn_SmartHome.exception;
+package dadn_SmartFarm.exception;
 
 import lombok.AccessLevel;
 import lombok.Getter;

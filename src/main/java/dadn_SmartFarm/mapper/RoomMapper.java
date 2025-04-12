@@ -1,7 +1,7 @@
-package dadn_SmartHome.mapper;
+package dadn_SmartFarm.mapper;
 
-import dadn_SmartHome.dto.RoomDTO.RoomDtoModel.RoomResponseInfo;
-import dadn_SmartHome.model.Room;
+import dadn_SmartFarm.dto.RoomDTO.RoomDtoModel.RoomResponseInfo;
+import dadn_SmartFarm.model.Room;
 import lombok.Builder;
 import org.springframework.stereotype.Component;
 

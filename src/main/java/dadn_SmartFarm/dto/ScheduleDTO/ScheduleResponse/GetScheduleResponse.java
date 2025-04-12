@@ -1,6 +1,7 @@
-package dadn_SmartHome.dto.ScheduleDTO.ScheduleResponse;
+package dadn_SmartFarm.dto.ScheduleDTO.ScheduleResponse;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
-import dadn_SmartHome.model.Schedule;
+import dadn_SmartFarm.model.Schedule;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

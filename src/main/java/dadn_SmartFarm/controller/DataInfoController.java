@@ -1,4 +1,4 @@
-package dadn_SmartHome.controller;
+package dadn_SmartFarm.controller;
 
 import dadn_SmartFarm.dto.DataInfo.DataDTO;
 import dadn_SmartFarm.dto.Response;
