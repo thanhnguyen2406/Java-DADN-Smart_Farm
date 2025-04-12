@@ -1,4 +1,4 @@
-package dadn_SmartFarm.exception;
+package dadn_SmartHome.exception;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,11 +23,21 @@ public enum ErrorCode {
     TRIGGER_DEVICE_NOT_FOUND(404, "Triggers for this device to be active is not found"),
     FEED_SENSOR_NOT_FOUND(404, "Feed sensor not found"),
     FEED_CONTROL_NOT_FOUND(404, "Feed control not found"),
+    ROOM_NOT_FOUND(404, "Room not found"),
+    SCHEDULE_NOT_FOUND(404, "Schedule not found"),
 
     //409: Resource existed errors
     USER_EXISTED(409, "User already existed"),
     FEED_EXISTED(409, "Feed already existed"),
-    TRIGGER_EXISTED(409, "Trigger already existed");
+    TRIGGER_EXISTED(409, "Trigger already existed"),
+    ROOM_EXISTED(409, "Room already existed"),
+
+    //4002: Bad Request / logic conflict
+    START_DATE_AFTER_END_DATE(4002, "Start date after end date"),
+    REQUEST_START_DATE_AND_END_DATE(4002, "Request start date and end date"),
+    REQUEST_START_TIME_BEFORE_END_TIME(4002, "Request start time before end time"),
+    REQUEST_WEEKDAY(4002, "Request weekday"),
+    SCHEDULE_TIME_OVERLAP(4002, "Schedule time overlap");
 
     int code;
     String message;

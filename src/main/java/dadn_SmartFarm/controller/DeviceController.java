@@ -1,8 +1,8 @@
-package dadn_SmartFarm.controller;
+package dadn_SmartHome.controller;
 
-import dadn_SmartFarm.dto.DeviceDTO.DeviceDTO;
-import dadn_SmartFarm.dto.Response;
-import dadn_SmartFarm.service.interf.IDeviceService;
+import dadn_SmartHome.dto.DeviceDTO.DeviceDTO;
+import dadn_SmartHome.dto.Response;
+import dadn_SmartHome.service.interf.IDeviceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

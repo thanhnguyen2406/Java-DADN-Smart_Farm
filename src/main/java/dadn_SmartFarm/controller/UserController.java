@@ -4,6 +4,7 @@ import dadn_SmartFarm.dto.Response;
 import dadn_SmartFarm.dto.UserDTO.UserDTO;
 import dadn_SmartFarm.service.interf.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

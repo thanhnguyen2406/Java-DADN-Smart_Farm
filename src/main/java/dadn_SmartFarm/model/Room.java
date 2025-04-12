@@ -1,9 +1,11 @@
 package dadn_SmartFarm.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,6 +19,9 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
-    @Column(nullable = false)
-    List<String> listDevicesId;
+    @NotNull
+    String name;
+
+    @NotNull
+    String email;
 }

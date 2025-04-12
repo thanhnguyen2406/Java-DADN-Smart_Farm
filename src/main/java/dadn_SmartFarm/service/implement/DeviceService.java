@@ -1,4 +1,4 @@
-package dadn_SmartFarm.service.implement;
+package dadn_SmartHome.service.implement;
 
 import dadn_SmartFarm.dto.DeviceDTO.DeviceDTO;
 import dadn_SmartFarm.dto.Response;

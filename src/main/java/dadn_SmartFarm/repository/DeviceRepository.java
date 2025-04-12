@@ -9,12 +9,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query("SELECT d.feedsList FROM Device d")
     List<Map<String, Long>> findAllFeeds();
     List<Device> findByIdNot(long id);
+
+    @Query("SELECT d.id from Device d where d.room.id = :roomId")
+    Optional<List<Long>> findIdByRoomId(@Param("roomId") long roomId);
 
     Device findByFeedsList(Map<String, FeedInfo> feedsList);
 

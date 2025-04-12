@@ -1,10 +1,11 @@
-package dadn_SmartFarm.dto;
+package dadn_SmartHome.dto.ResponseDTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import dadn_SmartFarm.model.DataInfo;
 import dadn_SmartFarm.model.DeviceTrigger;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
 import java.util.List;
 
 @Getter
