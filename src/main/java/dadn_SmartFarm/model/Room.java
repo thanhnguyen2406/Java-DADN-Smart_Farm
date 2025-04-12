@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Entity
 @Data
 @Builder
@@ -16,9 +18,9 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
-    @NotNull
+    @Column(nullable = false)
     String name;
 
-    @NotNull
-    String email;
+    @ElementCollection
+    List<String> listUsername;
 }

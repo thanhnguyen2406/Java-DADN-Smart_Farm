@@ -29,6 +29,7 @@ public class Response {
     List<DataInfo> listData;
     List<DeviceTrigger> listDeviceTriggers;
 
-    //Encode device
+    //Encode key
     String encodedFeeds;
+    String encodedRoom;
 }

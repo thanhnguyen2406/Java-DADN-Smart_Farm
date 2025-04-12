@@ -179,51 +179,9 @@
           }
         ```
 
-#### 4. Encode device
-- **URL**: `GET /smart-farm/devices/encode/{id}`
-- **Description**: Mã hóa thiết bị.
-- **Path variable**: long id
-- **Response**:
-    - `200 OK`: Encoded successfully.
-      ```json
-      {
-          "code": 200,
-          "message": "Device encoded successfully",
-          "authenticated": true,
-          "encodedFeeds": "ZmFuOjMwMjM2NjQ7"
-      }
-      ```
-    - `404 Device not found`
-        ```json
-          {
-            "statusCode": 404,
-            "message": "Device not found"     
-          }
-        ```
-
-#### 5. Assign device
-- **URL**: `GET /smart-farm/devices/assign`
-- **Description**: Gán thiết bị cho người dùng.
-- **Request Param**: encodedFeeds : ZmFuOjMwMjM2NjQ7
-- **Response**:
-    - `200 OK`: Assigned successfully.
-      ```json
-      {
-          "code": 200,
-          "message": "Device has assigned successfully",
-          "authenticated": true
-      }
-      ```
-    - `400 Invalid encoded device`
-      ```json
-      {
-         "code": 400,
-         "message": "Encoded device string is invalid"     
-      }
-      ```
 ### Rooms APIs
 #### 1. Create new room
-- **URL**: `POST /smart-farm/room`
+- **URL**: `POST /smart-farm/rooms/add`
 - **Description**: Tạo mới trang trại cho trường hợp người dùng sở hữu nhiều trang trại khác nhau.
 - **RequestBody**:
     ```json
@@ -251,7 +209,7 @@
       }
     ```
 #### 2. Get rooms
-- **URL**: `GET /smart-farm/room`
+- **URL**: `GET /smart-farm/rooms`
 - **Description**: Lấy ra toàn bộ danh sách các trang trại đang quản lí
 - **RequestBody**:
 ```json
@@ -280,7 +238,7 @@
 }
 ```
 #### 3. Update name
-- **URL**: `PUT /smart-farm/room/update-name`
+- **URL**: `PUT /smart-farm/rooms/update`
 - **Description**: Đổi tên trang trại
 - **RequestBody**:
 ```json
@@ -299,7 +257,48 @@
     "name": "vuon thanh long Tinh Doi"
 }
 ```
+#### 4. Encode room
+- **URL**: `GET /smart-farm/rooms/encode/{id}`
+- **Description**: Mã hóa phòng.
+- **Path variable**: long id
+  - **Response**:
+      - `200 OK`: Encoded successfully.
+        ```json
+        {
+        "code": 200,
+        "message": "Room encoded successfully",
+        "authenticated": false,
+        "encodedRoom": "MTp2dW9uIHRoYW5oIGxvbmcgVHJpIEFuOlNtYXJ0RmFybVNlY3JldA=="
+        }
+        ```
+      - `404 Room not found`
+          ```json
+            {
+              "statusCode": 404,
+              "message": "Room not found"     
+            }
+          ```
 
+#### 5. Assign room
+- **URL**: `GET /smart-farm/rooms/assign`
+- **Description**: Gán phòng cho người dùng.
+- **Request Param**: encodedFeeds : MTp2dW9uIHRoYW5oIGxvbmcgVHJpIEFuOlNtYXJ0RmFybVNlY3JldA==
+- **Response**:
+    - `200 OK`: Assigned successfully.
+      ```json
+      {
+          "code": 200,
+          "message": "Device has assigned successfully",
+          "authenticated": true
+      }
+      ```
+    - `400 Invalid encoded device`
+      ```json
+      {
+         "code": 400,
+         "message": "Encoded device string is invalid"     
+      }
+      ```
 ### Schedule APIs
 #### 1. Create schedule DAILY
 - **URL**: `POST /smart-farm/schedule/create`
