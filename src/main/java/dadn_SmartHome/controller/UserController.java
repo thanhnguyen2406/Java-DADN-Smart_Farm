@@ -1,9 +1,10 @@
 package dadn_SmartHome.controller;
 
-import dadn_SmartHome.dto.Response;
+import dadn_SmartHome.dto.ResponseDTO.Response;
 import dadn_SmartHome.dto.UserDTO.UserDTO;
 import dadn_SmartHome.service.interf.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final IUserService userService;
+
+    @Autowired
+    private IUserService userService;
 
     @PostMapping("/register")
     ResponseEntity<Response> registerUser(@RequestBody UserDTO request) {

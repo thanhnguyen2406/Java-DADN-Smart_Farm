@@ -1,10 +1,7 @@
 package dadn_SmartHome.service.interf;
 
 import dadn_SmartHome.dto.DataInfo.DataDTO;
-import dadn_SmartHome.dto.Response;
-import dadn_SmartHome.model.DataInfo;
-
-import java.util.List;
+import dadn_SmartHome.dto.ResponseDTO.Response;
 
 public interface IDataInfoService {
     Response getAllData (String url);

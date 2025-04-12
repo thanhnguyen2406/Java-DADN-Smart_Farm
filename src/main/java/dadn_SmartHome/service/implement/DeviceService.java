@@ -1,7 +1,7 @@
 package dadn_SmartHome.service.implement;
 
 import dadn_SmartHome.dto.DeviceDTO.DeviceDTO;
-import dadn_SmartHome.dto.Response;
+import dadn_SmartHome.dto.ResponseDTO.Response;
 import dadn_SmartHome.exception.AppException;
 import dadn_SmartHome.exception.ErrorCode;
 import dadn_SmartHome.mapper.DeviceMapper;

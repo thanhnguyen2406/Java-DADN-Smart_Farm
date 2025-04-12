@@ -15,7 +15,8 @@ import java.util.Map;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DeviceDTO {
-    Long id;
+    long id;
+    long roomId;
     String name;
     DeviceType type;
     DeviceStatus status;

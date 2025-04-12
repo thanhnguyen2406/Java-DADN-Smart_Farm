@@ -21,6 +21,10 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    Room room;
+
     @Column(nullable = false)
     String name;
 

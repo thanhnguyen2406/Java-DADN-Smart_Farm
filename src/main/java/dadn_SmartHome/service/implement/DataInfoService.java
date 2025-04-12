@@ -2,7 +2,7 @@ package dadn_SmartHome.service.implement;
 
 import dadn_SmartHome.dto.DataInfo.DataDTO;
 import dadn_SmartHome.dto.DataInfo.DataInfoDTO;
-import dadn_SmartHome.dto.Response;
+import dadn_SmartHome.dto.ResponseDTO.Response;
 import dadn_SmartHome.mapper.DataMapper;
 import dadn_SmartHome.model.DataInfo;
 import dadn_SmartHome.service.interf.IDataInfoService;
