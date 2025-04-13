@@ -25,4 +25,21 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query(value = "SELECT COUNT(*) > 0 FROM device WHERE JSON_EXTRACT(feeds_list, CONCAT('$.', :feedKey)) IS NOT NULL", nativeQuery = true)
     long existsFeedKey(@Param("feedKey") String feedKey);
 
+    @Query(value = """
+    SELECT COUNT(*) > 0
+    FROM device
+    WHERE type = 'SENSOR_TRIGGER'
+    AND JSON_EXTRACT(feeds_list, CONCAT('$.', :sensorKey)) IS NOT NULL
+    """, nativeQuery = true)
+    long existsSensorTriggerFeedKey(@Param("sensorKey") String sensorKey);
+
+
+    @Query(value = """
+    SELECT COUNT(*) > 0
+    FROM device
+    WHERE type = 'CONTROL'
+    AND JSON_EXTRACT(feeds_list, CONCAT('$.', :controlKey)) IS NOT NULL
+    """, nativeQuery = true)
+    long existsControlFeedKey(@Param("controlKey") String controlKey);
+
 }

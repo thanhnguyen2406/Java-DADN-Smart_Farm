@@ -1,6 +1,7 @@
 package dadn_SmartFarm.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import dadn_SmartFarm.dto.DeviceTriggerDTO.DeviceTriggerDTO;
 import dadn_SmartFarm.model.DataInfo;
 import dadn_SmartFarm.model.DeviceTrigger;
 import lombok.*;
@@ -27,7 +28,7 @@ public class Response {
     //DTO response
     DataInfo dataInfo;
     List<DataInfo> listData;
-    List<DeviceTrigger> listDeviceTriggers;
+    List<DeviceTriggerDTO> listDeviceTriggersDTO;
 
     //Encode key
     String encodedFeeds;

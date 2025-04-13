@@ -11,13 +11,10 @@ import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.model.enums.DeviceType;
 import dadn_SmartFarm.repository.DeviceRepository;
 import dadn_SmartFarm.repository.DeviceTriggerRepository;
-import dadn_SmartFarm.service.implement.MqttService;
 import dadn_SmartFarm.service.interf.IDeviceService;
-import dadn_SmartFarm.utils.FeedEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

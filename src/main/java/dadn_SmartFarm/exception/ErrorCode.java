@@ -13,6 +13,10 @@ public enum ErrorCode {
     UNAUTHENTICATED_USERNAME(401, "Please check your username again"),
     UNAUTHENTICATED_USERNAME_DOMAIN(401, "Please enter email ends with @gmail.com"),
 
+    //401: Invalid feed key
+    FEED_SENSOR_NOT_MATCH(401, "Please enter a valid feed sensor"),
+    FEED_CONTROL_NOT_MATCH(401, "Please enter a valid control feed"),
+
     //400: Invalid encoded device
     ENCODED_DEVICE_INVALID(400, "Encoded device string is invalid"),
 
@@ -25,6 +29,7 @@ public enum ErrorCode {
     FEED_CONTROL_NOT_FOUND(404, "Feed control not found"),
     ROOM_NOT_FOUND(404, "Room not found"),
     SCHEDULE_NOT_FOUND(404, "Schedule not found"),
+
 
     //409: Resource existed errors
     USER_EXISTED(409, "User already existed"),

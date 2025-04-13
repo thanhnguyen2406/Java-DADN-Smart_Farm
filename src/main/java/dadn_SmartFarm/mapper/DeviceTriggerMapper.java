@@ -15,4 +15,14 @@ public class DeviceTriggerMapper {
                 .controlFeedKey(deviceTriggerDTO.getControlFeedKey())
                 .build();
     }
+
+    public DeviceTriggerDTO toDeviceTriggerDTO (DeviceTrigger deviceTrigger) {
+        return DeviceTriggerDTO.builder()
+                .id(deviceTrigger.getId())
+                .status(deviceTrigger.getStatus())
+                .condition(deviceTrigger.getThresholdCondition())
+                .sensorFeedKey(deviceTrigger.getSensorFeedKey())
+                .controlFeedKey(deviceTrigger.getControlFeedKey())
+                .build();
+    }
 }
