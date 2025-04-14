@@ -9,16 +9,25 @@ import dadn_SmartFarm.exception.ErrorCode;
 import dadn_SmartFarm.model.Device;
 import dadn_SmartFarm.model.Schedule;
 import dadn_SmartFarm.model.enums.ScheduleType;
+import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.repository.DeviceRepository;
 import dadn_SmartFarm.repository.RoomRepository;
 import dadn_SmartFarm.repository.ScheduleRepository;
 import dadn_SmartFarm.service.interf.IScheduleService;
+import jakarta.annotation.PostConstruct;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -27,6 +36,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@EnableScheduling
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ScheduleService implements IScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final RoomRepository roomRepository;
@@ -110,6 +121,9 @@ public class ScheduleService implements IScheduleService {
         // Save schedule into Database
         schedule = scheduleRepository.save(schedule);
 
+        // Check if the schedule falls within the current month and add to active schedules if it does
+        addToActiveSchedulesIfCurrentMonth(schedule);
+
         // Return result
         return CreateScheduleResponse.builder()
                 .code(200)
@@ -131,6 +145,9 @@ public class ScheduleService implements IScheduleService {
     public DeleteScheduleResponse DeleteSchedule(long id) {
         Schedule schedule = scheduleRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
+
+        // Remove the schedule from activeSchedules if present
+        removeFromActiveSchedules(id);
 
         scheduleRepository.delete(schedule);
         return DeleteScheduleResponse.builder()
@@ -294,4 +311,343 @@ public class ScheduleService implements IScheduleService {
                 return false;
         }
     }
+
+    /**
+     * Inner class to represent a schedule with its execution information
+     */
+    @Data
+    @Builder
+    static class inforTask {
+        boolean start;
+        LocalDateTime localDateTime;
+    }
+
+    /**
+     * Inner class to represent a schedule with its execution information
+     */
+    @Data
+    @Builder
+    static class ScheduleTask {
+        Schedule schedule;
+        Status startStatus;
+        Status endStatus;
+        List<inforTask> executionTimes;
+    }
+
+    @PostConstruct
+    public void init() {
+        try {
+            log.info("Initializing ScheduleService");
+            loadSchedulesForCurrentPeriod();
+            log.info("ScheduleService initialization complete");
+        } catch (Exception e) {
+            log.error("Error during ScheduleService initialization", e);
+            throw e; // Re-throw to let Spring know initialization failed
+        }
+    }
+
+    // List to store active schedules that need to be checked
+    final List<ScheduleTask> activeSchedules = new ArrayList<>();
+
+    // Track the current month for reloading purposes
+    int currentMonth = LocalDate.now().getMonthValue();
+    int currentYear = LocalDate.now().getYear();
+
+    // Threshold for reloading schedules when list gets small
+    static final int RELOAD_THRESHOLD = 5;
+
+    /**
+     * Loads all schedules for the current month and prepares them for execution
+     */
+    private void loadSchedulesForCurrentPeriod() {
+        log.info("Loading schedules for {}/{}", currentMonth, currentYear);
+        activeSchedules.clear();
+
+        LocalDate startOfMonth = LocalDate.of(currentYear, currentMonth, 1);
+        LocalDate endOfMonth = YearMonth.of(currentYear, currentMonth).atEndOfMonth();
+        LocalDate now = LocalDate.now();
+
+        // Use start date as the latter of now or start of month
+        LocalDate effectiveStartDate = now.isBefore(startOfMonth) ? startOfMonth : now;
+
+        // Query only relevant schedules instead of findAll()
+        List<Schedule> relevantSchedules = scheduleRepository.findSchedulesForPeriod(effectiveStartDate, endOfMonth);
+
+        for (Schedule schedule : relevantSchedules) {
+            List<inforTask> executionTimes = calculateExecutionTimes(schedule, effectiveStartDate, endOfMonth);
+
+            // Only add schedules that have execution times in the current period
+            if (!executionTimes.isEmpty()) {
+                activeSchedules.add(ScheduleTask.builder()
+                        .schedule(schedule)
+                        .startStatus(schedule.getStatus())
+                        .endStatus(schedule.getStatus().opposite())
+                        .executionTimes(executionTimes)
+                        .build());
+            }
+        }
+
+        log.info("Loaded {} schedules for execution", activeSchedules.size());
+    }
+
+    /**
+     * Calculate all times when a schedule should execute between start and end dates
+     */
+    private List<inforTask> calculateExecutionTimes(Schedule schedule, LocalDate startDate, LocalDate endDate) {
+        List<inforTask> executionTimes = new ArrayList<>();
+
+        switch (schedule.getScheduleType()) {
+            case ONCE:
+                // For ONCE schedules, check if the schedule's start date falls within our date range
+                if (schedule.getStartDate() != null) {
+                    LocalDate scheduleStartDate = schedule.getStartDate();
+                    LocalDate scheduleEndDate = schedule.getEndDate();
+
+                    // Determine the effective start date (later of schedule start date and method start date)
+                    LocalDate effectiveStartDate = scheduleStartDate.isBefore(startDate) ? startDate : scheduleStartDate;
+                    LocalDate effectiveEndDate = scheduleEndDate.isAfter(endDate) ? endDate : scheduleEndDate;
+
+                    // For each date from the effective start date to the end date
+                    for (LocalDate date = effectiveStartDate; !date.isAfter(effectiveEndDate); date = date.plusDays(1)) {
+                        // Add time_from execution time
+                        if (schedule.getTime_from() != null) {
+                            executionTimes.add(inforTask.builder()
+                                            .start(true)
+                                            .localDateTime(LocalDateTime.of(date, schedule.getTime_from()))
+                                    .build());
+                        }
+
+                        // Add time_to execution time
+                        if (schedule.getTime_to() != null) {
+                            executionTimes.add(inforTask.builder()
+                                            .start(false)
+                                            .localDateTime(LocalDateTime.of(date, schedule.getTime_to()))
+                                    .build());
+                        }
+                    }
+                }
+                break;
+
+            case WEEKLY:
+                if (schedule.getWeekDay() != null) {
+                    // For each date in our range
+                    for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+                        // If this date matches the weekday of the schedule
+                        if (date.getDayOfWeek().name().equals(schedule.getWeekDay().name())) {
+                            // Add time_from execution time
+                            if (schedule.getTime_from() != null) {
+                                executionTimes.add(inforTask.builder()
+                                                .start(true)
+                                                .localDateTime(LocalDateTime.of(date, schedule.getTime_from()))
+                                        .build());
+                            }
+
+                            // Add time_to execution time
+                            if (schedule.getTime_to() != null) {
+                                executionTimes.add(inforTask.builder()
+                                                .start(false)
+                                                .localDateTime(LocalDateTime.of(date, schedule.getTime_to()))
+                                        .build());
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case DAILY:
+                // For DAILY schedules, add execution times for each day in the range
+                for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+                    // Add time_from execution time
+                    if (schedule.getTime_from() != null) {
+                        executionTimes.add(inforTask.builder()
+                                        .start(true)
+                                        .localDateTime(LocalDateTime.of(date, schedule.getTime_from()))
+                                .build());
+                    }
+
+                    // Add time_to execution time
+                    if (schedule.getTime_to() != null) {
+                        executionTimes.add(inforTask.builder()
+                                        .start(false)
+                                        .localDateTime(LocalDateTime.of(date, schedule.getTime_to()))
+                                .build());
+                    }
+                }
+                break;
+        }
+
+        return executionTimes;
+    }
+
+    /**
+     * Check schedules every minute
+     */
+    @Scheduled(fixedRate = 60000) // Check every minute
+    private void checkSchedules() {
+        LocalDateTime now = LocalDateTime.now();
+        log.info("Schedule check at: {}", now);
+
+        // Check if we need to reload for a new month
+        if (now.getMonthValue() != currentMonth || now.getYear() != currentYear) {
+            currentMonth = now.getMonthValue();
+            currentYear = now.getYear();
+            loadSchedulesForCurrentPeriod();
+            return;
+        }
+
+        // Create a window of +/- 30 seconds to allow for slight timing differences
+        LocalDateTime windowStart = now.minusSeconds(30);
+        LocalDateTime windowEnd = now.plusSeconds(30);
+
+        // Track schedules to be updated in the active list
+        List<ScheduleTask> tasksToRemove = new ArrayList<>();
+
+        // Check each schedule
+        for (ScheduleTask task : activeSchedules) {
+            // Find execution times that fall within our current time window
+            List<inforTask> matchingTimes = task.getExecutionTimes().stream()
+                    .filter(time -> !time.getLocalDateTime().isBefore(windowStart) && !time.getLocalDateTime().isAfter(windowEnd))
+                    .toList();
+
+            if (!matchingTimes.isEmpty()) {
+                // We found a schedule that should execute now
+                Schedule schedule = task.getSchedule();
+
+                // Execute each matching time (there might be multiple in rare cases)
+                for (inforTask timeInfo : matchingTimes) {
+                    // Determine which status to apply based on whether it's a start or end time
+                    Status targetStatus = timeInfo.isStart() ? task.getStartStatus() : task.getEndStatus();
+
+                    log.info("Executing schedule: ID={}, Type={}, Device={}, Action={}, Target Status={}",
+                            schedule.getId(), schedule.getScheduleType(),
+                            schedule.getDevice().getId(),
+                            timeInfo.isStart() ? "START" : "END",
+                            targetStatus);
+
+                    // Execute the schedule with the appropriate status
+                    executeSchedule(schedule, targetStatus);
+                }
+
+                // Remove the executed times from the list
+                task.getExecutionTimes().removeAll(matchingTimes);
+
+                // If no more execution times, mark for removal
+                if (task.getExecutionTimes().isEmpty()) {
+                    tasksToRemove.add(task);
+                }
+            }
+        }
+
+        // Remove completed tasks
+        activeSchedules.removeAll(tasksToRemove);
+
+        // Check if we need to reload schedules (list getting small)
+        if (activeSchedules.size() <= RELOAD_THRESHOLD) {
+            // If we're near the end of month, load next month's schedules
+            if (now.getDayOfMonth() >= 25) {
+                // Calculate next month
+                YearMonth nextMonth = YearMonth.of(currentYear, currentMonth).plusMonths(1);
+                currentYear = nextMonth.getYear();
+                currentMonth = nextMonth.getMonthValue();
+                loadSchedulesForCurrentPeriod();
+            } else {
+                // Otherwise just reload the current month
+                loadSchedulesForCurrentPeriod();
+            }
+        }
+    }
+
+    /**
+     * Checks if the schedule falls within the current month and adds it to active schedules if it does
+     */
+    private void addToActiveSchedulesIfCurrentMonth(Schedule schedule) {
+        try {
+            YearMonth currentYearMonth = YearMonth.now();
+            boolean isCurrentMonth = false;
+
+            switch (schedule.getScheduleType()) {
+                case ONCE:
+                    // For ONCE schedules, check if startDate is in current month
+                    LocalDate startDate = schedule.getStartDate();
+                    if (startDate != null) {
+                        YearMonth scheduleYearMonth = YearMonth.from(startDate);
+                        isCurrentMonth = scheduleYearMonth.equals(currentYearMonth);
+                    }
+                    break;
+
+                case DAILY:
+                    // DAILY schedules are always active in the current month
+                    isCurrentMonth = true;
+                    break;
+
+                case WEEKLY:
+                    // WEEKLY schedules are always active in the current month if they have a weekDay
+                    if (schedule.getWeekDay() != null) {
+                        isCurrentMonth = true;
+                    }
+                    break;
+            }
+
+            if (isCurrentMonth) {
+                log.info("Adding new schedule (ID: {}) to active schedules as it falls within the current month",
+                        schedule.getId());
+
+                // Calculate execution times for the current month
+                LocalDate now = LocalDate.now();
+                LocalDate endOfMonth = currentYearMonth.atEndOfMonth();
+                List<inforTask> executionTimes = calculateExecutionTimes(schedule, now, endOfMonth);
+
+                // Create a ScheduleTask and add it to activeSchedules
+                if (!executionTimes.isEmpty()) {
+                    ScheduleTask task = ScheduleTask.builder()
+                            .schedule(schedule)
+                            .startStatus(schedule.getStatus())
+                            .endStatus(schedule.getStatus().opposite())
+                            .executionTimes(executionTimes)
+                            .build();
+
+                    activeSchedules.add(task);
+
+                    log.info("Added schedule with {} execution times", executionTimes.size());
+                } else {
+                    log.info("Schedule has no execution times in the current month");
+                }
+            } else {
+                log.info("New schedule (ID: {}) does not fall within the current month, not adding to active schedules",
+                        schedule.getId());
+            }
+        } catch (Exception e) {
+            log.error("Error checking if schedule falls within current month: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Execute a schedule - this would contain your actual execution logic
+     */
+    private void executeSchedule(Schedule schedule, Status targetStatus) {
+        // Here you would implement the actual logic to execute the schedule
+        // For example, sending a command to the device
+        log.info("Device {} status changed to: {}",
+                schedule.getDevice().getId(), targetStatus);
+
+        // Add your device control logic here
+        // For example, you might have a service that controls devices:
+        // deviceControlService.setDeviceStatus(schedule.getDevice().getId(), targetStatus);
+    }
+
+    /**
+     * Helper method to remove a schedule from activeSchedules by its ID
+     */
+    private void removeFromActiveSchedules(long scheduleId) {
+        // Create a copy of the list to avoid ConcurrentModificationException
+        List<ScheduleTask> tasksToRemove = activeSchedules.stream()
+                .filter(task -> task.getSchedule().getId() == scheduleId)
+                .toList();
+
+        if (!tasksToRemove.isEmpty()) {
+            activeSchedules.removeAll(tasksToRemove);
+            log.info("Removed schedule ID {} from active schedules", scheduleId);
+        }
+    }
+
 }
