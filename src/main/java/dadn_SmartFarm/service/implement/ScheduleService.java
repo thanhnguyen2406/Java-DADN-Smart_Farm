@@ -1,5 +1,6 @@
 package dadn_SmartFarm.service.implement;
 
+import dadn_SmartFarm.dto.DeviceDTO.DeviceDTO;
 import dadn_SmartFarm.dto.ScheduleDTO.ScheduleRequestDTO.CreateScheduleRequest;
 import dadn_SmartFarm.dto.ScheduleDTO.ScheduleResponse.CreateScheduleResponse;
 import dadn_SmartFarm.dto.ScheduleDTO.ScheduleResponse.DeleteScheduleResponse;
@@ -7,6 +8,7 @@ import dadn_SmartFarm.dto.ScheduleDTO.ScheduleResponse.GetScheduleResponse;
 import dadn_SmartFarm.exception.AppException;
 import dadn_SmartFarm.exception.ErrorCode;
 import dadn_SmartFarm.model.Device;
+import dadn_SmartFarm.model.FeedInfo;
 import dadn_SmartFarm.model.Schedule;
 import dadn_SmartFarm.model.enums.ScheduleType;
 import dadn_SmartFarm.model.enums.Status;
@@ -32,6 +34,7 @@ import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +45,7 @@ public class ScheduleService implements IScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final RoomRepository roomRepository;
     private final DeviceRepository deviceRepository;
+    private final DeviceService deviceService;
 
 
     @Override
@@ -94,6 +98,10 @@ public class ScheduleService implements IScheduleService {
         Device device = deviceRepository.findById(createScheduleRequest.getId_device())
                 .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
 
+        if(!deviceService.checkFeedIdExists(device.getId(), createScheduleRequest.getFeedId())){
+            throw new AppException(ErrorCode.FEED_ID_NOT_FOUND);
+        }
+
         // Get all current calendars of the device
         List<Schedule> existingSchedules = scheduleRepository.findByDeviceId(device.getId());
 
@@ -108,6 +116,7 @@ public class ScheduleService implements IScheduleService {
         // Create new Object Schedule from CreateScheduleRequest
         Schedule schedule = Schedule.builder()
                 .device(device)
+                .feedId(createScheduleRequest.getFeedId())
                 .status(createScheduleRequest.getStatus())
                 .description(createScheduleRequest.getDescription())
                 .scheduleType(createScheduleRequest.getScheduleType())
@@ -130,6 +139,7 @@ public class ScheduleService implements IScheduleService {
                 .message("Success")
                 .authenticated(true)
                 .id_device(schedule.getDevice().getId())
+                .feedId(schedule.getFeedId())
                 .status(schedule.getStatus())
                 .description(schedule.getDescription())
                 .scheduleType(schedule.getScheduleType())
@@ -249,7 +259,7 @@ public class ScheduleService implements IScheduleService {
         LocalTime newTimeTo = scheduleRequest.getTime_to();
 
         if(existingType == ScheduleType.DAILY || existingType == ScheduleType.WEEKLY || existingType == ScheduleType.ONCE) {
-            return isTimeOverlapping(newTimeFrom, newTimeTo, scheduleRequest.getTime_from(), scheduleRequest.getTime_to());
+            return isTimeOverlapping(newTimeFrom, newTimeTo, existingSchedule.getTime_from(), existingSchedule.getTime_to());
         }
 
         return false;
@@ -630,9 +640,20 @@ public class ScheduleService implements IScheduleService {
         log.info("Device {} status changed to: {}",
                 schedule.getDevice().getId(), targetStatus);
 
-        // Add your device control logic here
-        // For example, you might have a service that controls devices:
-        // deviceControlService.setDeviceStatus(schedule.getDevice().getId(), targetStatus);
+        Map<String, FeedInfo> feedList = schedule.getDevice().getFeedsList().entrySet().stream()
+                .filter(entry -> schedule.getFeedId() == entry.getValue().getFeedId())
+                .findFirst()
+                .map(entry -> Map.of(entry.getKey(), entry.getValue()))
+                .orElse(Map.of());
+
+        deviceService.updateDevice(DeviceDTO.builder()
+                        .id(schedule.getDevice().getId())
+                        .roomId(schedule.getDevice().getRoomId())
+                        .name(schedule.getDevice().getName())
+                        .type(schedule.getDevice().getType())
+                        .status(targetStatus)
+                        .feedsList(feedList)
+                .build());
     }
 
     /**
