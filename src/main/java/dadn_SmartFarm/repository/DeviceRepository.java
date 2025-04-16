@@ -1,11 +1,10 @@
 package dadn_SmartFarm.repository;
 
 import dadn_SmartFarm.model.Device;
-import dadn_SmartFarm.model.FeedInfo;
+import dadn_SmartFarm.model.enums.DeviceType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -26,5 +25,19 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query(value = "SELECT COUNT(*) > 0 FROM device WHERE JSON_EXTRACT(feeds_list, CONCAT('$.', :feedKey)) IS NOT NULL", nativeQuery = true)
     long existsFeedKey(@Param("feedKey") String feedKey);
 
+    @Query(value = """
+    SELECT * FROM device 
+    JOIN JSON_TABLE(
+      JSON_EXTRACT(feeds_list, '$'),
+      '$.*' COLUMNS (
+        feedId BIGINT PATH '$.feedId'
+      )
+    ) AS jt
+    ON jt.feedId = :feedId
+    LIMIT 1
+    """, nativeQuery = true)
+    Optional<Device> findDeviceByFeedIdInJson(@Param("feedId") Long feedId);
+
+    List<Device> findByType(DeviceType type);
 
 }

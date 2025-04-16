@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Service
@@ -166,4 +167,21 @@ public class DeviceService implements IDeviceService {
                 .orElse(false);
     }
 
+    public double getThresholdMaxByFeedId(Long feedId) {
+        return deviceRepository.findDeviceByFeedIdInJson(feedId)
+                .flatMap(device -> device.getFeedsList().values().stream()
+                        .filter(info -> Objects.equals(info.getFeedId(), feedId))
+                        .findFirst())
+                .map(FeedInfo::getThreshold_max)
+                .orElse(Double.NaN);
+    }
+
+    public double getThresholdMinByFeedId(Long feedId) {
+        return deviceRepository.findDeviceByFeedIdInJson(feedId)
+                .flatMap(device -> device.getFeedsList().values().stream()
+                        .filter(info -> Objects.equals(info.getFeedId(), feedId))
+                        .findFirst())
+                .map(FeedInfo::getThreshold_min)
+                .orElse(Double.NaN);
+    }
 }
