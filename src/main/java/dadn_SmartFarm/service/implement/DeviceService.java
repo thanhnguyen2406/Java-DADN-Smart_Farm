@@ -49,7 +49,7 @@ public class DeviceService implements IDeviceService {
     @Override
     public Response updateDevice(DeviceDTO request) {
         Device existingDevice = deviceRepository.findById(request.getId())
-                        .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
         existingDevice.setName(request.getName());
         existingDevice.setStatus(request.getStatus());
         existingDevice.setFeedsList(request.getFeedsList());

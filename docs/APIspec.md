@@ -307,6 +307,7 @@
 ```json
 {
   "id_device": 1,
+  "feedId": 3023664,
   "status": "ACTIVE",
   "description": "Watering dragon fruit",
   "scheduleType": "DAILY",
@@ -322,6 +323,7 @@
         "message": "Success",
         "authenticated": true,
         "id_device": 1,
+        "feedId": 3023664,
         "status": "ACTIVE",
         "description": "Watering dragon fruit",
         "scheduleType": "DAILY",
@@ -344,6 +346,7 @@
 ```json
 {
     "id_device": 1,
+    "feedId": 3023664,
     "status": "ACTIVE",
     "description": "Fill water into the pump",
     "scheduleType": "WEEKLY",
@@ -360,6 +363,7 @@
         "message": "Success",
         "authenticated": true,
         "id_device": 1,
+        "feedId": 3023664,
         "status": "ACTIVE",
         "description": "Fill water into the pump",
         "scheduleType": "WEEKLY",
@@ -384,6 +388,7 @@
 ```json
 {
   "id_device": 1,
+  "feedId": 3023664,
   "status": "INACTIVE",
   "description": "Turn off the fan",
   "scheduleType": "ONCE",
@@ -401,6 +406,7 @@
         "message": "Success",
         "authenticated": true,
         "id_device": 1,
+        "feedId": 3023664,
         "status": "INACTIVE",
         "description": "Turn off the fan",
         "scheduleType": "ONCE",

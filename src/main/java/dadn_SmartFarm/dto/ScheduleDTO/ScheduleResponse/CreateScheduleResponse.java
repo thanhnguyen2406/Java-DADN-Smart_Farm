@@ -24,6 +24,7 @@ public class CreateScheduleResponse {
     boolean authenticated;
 
     long id_device;
+    long feedId;
     Status status;
     String description;
 

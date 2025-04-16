@@ -29,6 +29,9 @@ public class Schedule {
     Device device ;
 
     @NotNull
+    long feedId;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
     Status status;
 

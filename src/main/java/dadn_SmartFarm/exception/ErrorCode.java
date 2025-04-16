@@ -27,6 +27,7 @@ public enum ErrorCode {
     TRIGGER_DEVICE_NOT_FOUND(404, "Triggers for this device to be active is not found"),
     FEED_SENSOR_NOT_FOUND(404, "Feed sensor not found"),
     FEED_CONTROL_NOT_FOUND(404, "Feed control not found"),
+    FEED_ID_NOT_FOUND(404, "Feed id not found"),
     ROOM_NOT_FOUND(404, "Room not found"),
     SCHEDULE_NOT_FOUND(404, "Schedule not found"),
 
