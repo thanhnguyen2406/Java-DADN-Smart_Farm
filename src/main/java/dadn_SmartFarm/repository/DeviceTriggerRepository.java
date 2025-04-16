@@ -1,6 +1,7 @@
 package dadn_SmartFarm.repository;
 
 import dadn_SmartFarm.model.DeviceTrigger;
+import dadn_SmartFarm.model.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +16,11 @@ public interface DeviceTriggerRepository extends JpaRepository<DeviceTrigger, Lo
             String controlFeedKey,
             String thresholdCondition
     );
-    boolean existsBySensorFeedKeyIn(List<String> sensorFeedKeys);
+
+    List<DeviceTrigger> findBySensorFeedKeyAndStatusAndThresholdCondition(
+            String sensorFeedKey,
+            Status status,
+            String thresholdCondition);
+
     Page<DeviceTrigger> findBySensorFeedKeyIn(List<String> sensorFeedKeys, Pageable pageable);
 }

@@ -1,5 +1,6 @@
 package dadn_SmartFarm.service.implement;
 
+import dadn_SmartFarm.dto.DataInfo.DataDTO;
 import dadn_SmartFarm.dto.DeviceDTO.DeviceDTO;
 import dadn_SmartFarm.dto.Response;
 import dadn_SmartFarm.exception.AppException;
@@ -10,14 +11,13 @@ import dadn_SmartFarm.model.FeedInfo;
 import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.model.enums.DeviceType;
 import dadn_SmartFarm.repository.DeviceRepository;
-import dadn_SmartFarm.repository.DeviceTriggerRepository;
+import dadn_SmartFarm.service.interf.IDataInfoService;
 import dadn_SmartFarm.service.interf.IDeviceService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,9 +27,9 @@ import java.util.Map;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DeviceService implements IDeviceService {
     DeviceRepository deviceRepository;
-    DeviceTriggerRepository deviceTriggerRepository;
     DeviceMapper deviceMapper;
     MqttService mqttService;
+    IDataInfoService dataInfoService;
 
     @Override
     public Response addDevice(DeviceDTO request) {
@@ -59,18 +59,25 @@ public class DeviceService implements IDeviceService {
         deviceRepository.save(existingDevice);
 
         //Connect with MQTT
-        if (existingDevice.getType() == DeviceType.SENSOR_DATA || existingDevice.getType() == DeviceType.SENSOR_TRIGGER) {
+        if (existingDevice.getType() == DeviceType.SENSOR) {
             if (existingDevice.getStatus() == Status.ACTIVE) {
-                if (existingDevice.getType() == DeviceType.SENSOR_TRIGGER) {
-                    List<String> feedKeys = new ArrayList<>(existingDevice.getFeedsList().keySet());
-                    if (!deviceTriggerRepository.existsBySensorFeedKeyIn(feedKeys)) {
-                        throw new AppException(ErrorCode.TRIGGER_DEVICE_NOT_FOUND);
-                    }
-                }
-                mqttService.connectDevice(existingDevice.getId(), existingDevice.getType(), existingDevice.getFeedsList());
+                mqttService.connectDevice(existingDevice.getId(), existingDevice.getFeedsList());
             } else if (existingDevice.getStatus() == Status.INACTIVE) {
                 mqttService.disconnectDevice(existingDevice.getId());
             }
+        } else {
+            existingDevice.getFeedsList().forEach((s, feedInfo) -> {
+                DataDTO dataDTO = new DataDTO();
+
+                dataDTO.setFeed_key(s);
+                dataDTO.setFeed_id(feedInfo.getFeedId());
+                if (existingDevice.getStatus() == Status.ACTIVE) {
+                    dataDTO.setValue("1");
+                } else if (existingDevice.getStatus() == Status.INACTIVE) {
+                    dataDTO.setValue("0");
+                }
+                dataInfoService.sendData(dataDTO);
+            });
         }
         return Response.builder()
                 .code(200)
@@ -89,37 +96,6 @@ public class DeviceService implements IDeviceService {
                 .message("Device deleted successfully")
                 .build();
     }
-
-//    @Override
-//    public Response encodeDevice(long id) {
-//        Device existingDevice = deviceRepository.findById(id)
-//                .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
-//        String encodedFeeds = FeedEncoder.encodeFeeds(existingDevice.getFeedsList());
-//        return Response.builder()
-//                .code(200)
-//                .message("Device encoded successfully")
-//                .encodedFeeds(encodedFeeds)
-//                .build();
-//    }
-//
-//    @Override
-//    public Response assignDevice(String encodedFeeds) {
-//        if (!FeedEncoder.isValidEncodedString(encodedFeeds)) {
-//            throw new AppException(ErrorCode.ENCODED_DEVICE_INVALID);
-//        }
-//        Map<String, FeedInfo> feeds = FeedEncoder.decodeFeeds(encodedFeeds);
-//        Device existingDevice = deviceRepository.findByFeedsList(feeds);
-//
-//        var context = SecurityContextHolder.getContext();
-//        String email = context.getAuthentication().getName();
-//
-//        existingDevice.setUserEmail(email);
-//        deviceRepository.save(existingDevice);
-//        return Response.builder()
-//                .code(200)
-//                .message("Device has assigned successfully")
-//                .build();
-//    }
 
     public boolean checkFeedsList(String typeService, Device device) {
         Map<String, FeedInfo> currentFeeds = device.getFeedsList();
@@ -152,7 +128,37 @@ public class DeviceService implements IDeviceService {
                         );
             });
         }
-
         return false;
     }
+
+    //    @Override
+//    public Response encodeDevice(long id) {
+//        Device existingDevice = deviceRepository.findById(id)
+//                .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
+//        String encodedFeeds = FeedEncoder.encodeFeeds(existingDevice.getFeedsList());
+//        return Response.builder()
+//                .code(200)
+//                .message("Device encoded successfully")
+//                .encodedFeeds(encodedFeeds)
+//                .build();
+//    }
+//
+//    @Override
+//    public Response assignDevice(String encodedFeeds) {
+//        if (!FeedEncoder.isValidEncodedString(encodedFeeds)) {
+//            throw new AppException(ErrorCode.ENCODED_DEVICE_INVALID);
+//        }
+//        Map<String, FeedInfo> feeds = FeedEncoder.decodeFeeds(encodedFeeds);
+//        Device existingDevice = deviceRepository.findByFeedsList(feeds);
+//
+//        var context = SecurityContextHolder.getContext();
+//        String email = context.getAuthentication().getName();
+//
+//        existingDevice.setUserEmail(email);
+//        deviceRepository.save(existingDevice);
+//        return Response.builder()
+//                .code(200)
+//                .message("Device has assigned successfully")
+//                .build();
+//    }
 }

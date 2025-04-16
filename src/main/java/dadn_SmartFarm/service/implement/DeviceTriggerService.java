@@ -120,6 +120,7 @@ public class DeviceTriggerService implements IDeviceTriggerService {
             Device device = deviceRepository.findById(deviceId)
                     .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
             List<String> feedKeys = new ArrayList<>(device.getFeedsList().keySet());
+            System.out.println(feedKeys);
             Page<DeviceTrigger> triggers = deviceTriggerRepository.findBySensorFeedKeyIn(feedKeys, pageable);
             if(feedKeys.isEmpty() || triggers.getContent().isEmpty()) {
                 return Response.builder()
@@ -151,7 +152,6 @@ public class DeviceTriggerService implements IDeviceTriggerService {
     }
 
 
-    //------------------------------------------------------------------------------
     public void checkTrigger(String sensorKey, String controlKey) {
         if (deviceRepository.existsFeedKey(sensorKey) <= 0) {
             throw new AppException(ErrorCode.FEED_SENSOR_NOT_FOUND);

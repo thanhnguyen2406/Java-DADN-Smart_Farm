@@ -28,14 +28,14 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query(value = """
     SELECT COUNT(*) > 0
     FROM device
-    WHERE type = 'SENSOR_TRIGGER'
+    WHERE type = 'SENSOR'
     AND JSON_EXTRACT(feeds_list, CONCAT('$.', :sensorKey)) IS NOT NULL
     """, nativeQuery = true)
     long existsSensorTriggerFeedKey(@Param("sensorKey") String sensorKey);
 
 
     @Query(value = """
-    SELECT COUNT(*) > 0
+    SELECT COUNT(*) > 0 
     FROM device
     WHERE type = 'CONTROL'
     AND JSON_EXTRACT(feeds_list, CONCAT('$.', :controlKey)) IS NOT NULL
