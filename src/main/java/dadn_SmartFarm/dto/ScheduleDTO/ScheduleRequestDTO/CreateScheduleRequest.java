@@ -19,7 +19,11 @@ import java.time.LocalTime;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateScheduleRequest {
+    @NotNull
     long id_device ;
+
+    @NotNull
+    long feedId;
 
     Status status;
     String description;

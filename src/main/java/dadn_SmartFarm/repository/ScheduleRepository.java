@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -38,5 +39,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findByDeviceId(long deviceId);
 
-
+    @Query("SELECT s FROM Schedule s WHERE " +
+            "(s.scheduleType = 'ONCE' AND s.startDate <= :endDate AND (s.endDate IS NULL OR s.endDate >= :startDate)) OR " +
+            "s.scheduleType = 'DAILY' OR " +
+            "s.scheduleType = 'WEEKLY'")
+    List<Schedule> findSchedulesForPeriod(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

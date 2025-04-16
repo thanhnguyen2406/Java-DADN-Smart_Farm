@@ -2,5 +2,10 @@ package dadn_SmartFarm.model.enums;
 
 public enum Status {
     ACTIVE,
-    INACTIVE
+    INACTIVE;
+
+    public Status opposite() {
+        return this == ACTIVE ? INACTIVE : ACTIVE;
+    }
 }
+

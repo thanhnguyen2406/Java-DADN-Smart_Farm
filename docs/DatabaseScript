@@ -1,11 +1,11 @@
 USE smart_farm;
 
 INSERT INTO user (id, email, password, name) VALUES
-(1, 'alice@example.com', 'password123', 'Alice'),
-(2, 'bob@example.com', 'password123', 'Bob'),
-(3, 'carol@example.com', 'password123', 'Carol'),
-(4, 'dave@example.com', 'password123', 'Dave'),
-(5, 'eve@example.com', 'password123', 'Eve');
+(1, 'alice@gmail.com', 'password123', 'Alice'),
+(2, 'bob@gmail.com', 'password123', 'Bob'),
+(3, 'carol@gmail.com', 'password123', 'Carol'),
+(4, 'dave@gmail.com', 'password123', 'Dave'),
+(5, 'eve@gmail.com', 'password123', 'Eve');
 
 INSERT INTO room (id, name) VALUES
 (1, 'Room 1'), (2, 'Room 2'),
@@ -15,11 +15,11 @@ INSERT INTO room (id, name) VALUES
 (9, 'Room 9'), (10, 'Room 10');
 
 INSERT INTO room_list_username (room_id, list_username) VALUES
-(1, 'alice@example.com'), (2, 'alice@example.com'),
-(3, 'bob@example.com'), (4, 'bob@example.com'),
-(5, 'carol@example.com'), (6, 'carol@example.com'),
-(7, 'dave@example.com'), (8, 'dave@example.com'),
-(9, 'eve@example.com'), (10, 'eve@example.com');
+(1, 'alice@gmail.com'), (2, 'alice@gmail.com'),
+(3, 'bob@gmail.com'), (4, 'bob@gmail.com'),
+(5, 'carol@gmail.com'), (6, 'carol@gmail.com'),
+(7, 'dave@gmail.com'), (8, 'dave@gmail.com'),
+(9, 'eve@gmail.com'), (10, 'eve@gmail.com');
 
 INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
 (1, 1, 'Smart Sensor 1', 'ACTIVE', 'SENSOR_TRIGGER',
