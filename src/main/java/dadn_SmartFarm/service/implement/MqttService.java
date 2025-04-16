@@ -1,25 +1,33 @@
 package dadn_SmartFarm.service.implement;
 
 import dadn_SmartFarm.model.Device;
+import dadn_SmartFarm.model.DeviceTrigger;
 import dadn_SmartFarm.model.FeedInfo;
-import dadn_SmartFarm.model.enums.DeviceType;
+import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.repository.DeviceRepository;
+import dadn_SmartFarm.repository.DeviceTriggerRepository;
 import jakarta.annotation.PreDestroy;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MqttService {
     private final DeviceRepository deviceRepository;
+
+    private final DeviceTriggerRepository deviceTriggerRepository;
+
     private static final String BROKER_URL = "tcp://io.adafruit.com:1883";
 
     @Value("${ADAFRUIT_USERNAME}")
@@ -34,11 +42,7 @@ public class MqttService {
     // ExecutorService để chạy multi-threading
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
-    public MqttService(DeviceRepository deviceRepository) {
-        this.deviceRepository = deviceRepository;
-    }
-
-    public void connectDevice(Long deviceId, DeviceType deviceType, Map<String, FeedInfo> feedsList) {
+    public void connectDevice(Long deviceId, Map<String, FeedInfo> feedsList) {
         if (deviceClients.containsKey(deviceId)) {
             log.warn("Device {} is already connected. Subscribing to new feeds.", deviceId);
             feedsList.forEach((feedKey, feedInfo) -> executorService.submit(() -> subscribeToFeed(deviceId, feedKey)));
@@ -97,7 +101,6 @@ public class MqttService {
                                 return;
                             }
 
-                            // Kiểm tra ngưỡng và thực hiện hành động tương ứng
                             if (feedInfo.getThreshold_max() != null && value > feedInfo.getThreshold_max()) {
                                 handleThresholdExceeded(deviceId, feedKey, "MAX", value);
                             } else if (feedInfo.getThreshold_min() != null && value < feedInfo.getThreshold_min()) {
@@ -212,8 +215,15 @@ public class MqttService {
 
     private void handleThresholdExceeded(Long deviceId, String feedKey, String thresholdType, double value) {
         log.warn("Device {}: [{}] exceeded {} threshold with value {}", deviceId, feedKey, thresholdType, value);
-        String valueSend = (thresholdType.equals("MAX")) ? "50" : "25";
-        publishMessage(deviceId, feedKey, valueSend);
+        List<DeviceTrigger> deviceTriggerList = deviceTriggerRepository.findBySensorFeedKeyAndStatusAndThresholdCondition(
+                feedKey,
+                Status.ACTIVE,
+                thresholdType
+        );
+        System.out.println(deviceTriggerList);
+        deviceTriggerList.forEach((deviceTrigger) -> {
+            publishMessage(deviceId, deviceTrigger.getControlFeedKey(), deviceTrigger.getValueSend());
+        });
     }
 
 }

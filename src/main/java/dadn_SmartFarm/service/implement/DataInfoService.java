@@ -23,6 +23,9 @@ public class DataInfoService implements IDataInfoService {
     @Value("${ADAFRUIT_X_AIO_KEY}")
     private String aioKey;
 
+    @Value("${ADAFRUIT_USERNAME}")
+    private String adafruitUsername;
+
     @Override
     public Response getAllData(String url) {
         RestTemplate restTemplate = new RestTemplate();
@@ -56,8 +59,9 @@ public class DataInfoService implements IDataInfoService {
 
         DataInfoDTO dataInfoDTO = dataMapper.toDataInfoDTO(dataDTO);
 
+        String url = "https://io.adafruit.com/api/v2/" + adafruitUsername + "/feeds/" + dataDTO.getFeed_key() + "/data";
         HttpEntity<DataInfoDTO> request = new HttpEntity<>(dataInfoDTO, headers);
-        restTemplate.postForEntity(dataDTO.getUrl(), request, DataInfo.class);
+        restTemplate.postForEntity(url, request, DataInfo.class);
         return Response.builder()
                 .code(200)
                 .message("Data send successfully")
