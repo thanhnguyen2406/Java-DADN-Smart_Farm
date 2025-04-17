@@ -42,12 +42,13 @@ public class SensorDataCollectorService {
 
             for(Map.Entry<String, FeedInfo> entry : feedsList.entrySet()){
                 FeedInfo feedInfo = entry.getValue();
+                String feedKey = entry.getKey();
                 if(feedInfo == null || feedInfo.getFeedId() == null){
                     continue;
                 }
 
                 try{
-                    double currentValue = adafruitClientService.getFeedValue(feedInfo.getFeedId());            // This place will use some logic to get the value of that feedId
+                    double currentValue = adafruitClientService.getFeedValue(feedKey);            // This place will use some logic to get the value of that feedId
 
                     Statistic statistic = Statistic.builder()
                             .feedId(feedInfo.getFeedId())

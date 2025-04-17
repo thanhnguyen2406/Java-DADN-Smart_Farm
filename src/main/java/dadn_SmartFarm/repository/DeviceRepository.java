@@ -41,6 +41,7 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     AND JSON_EXTRACT(feeds_list, CONCAT('$.', :controlKey)) IS NOT NULL
     """, nativeQuery = true)
     long existsControlFeedKey(@Param("controlKey") String controlKey);
+
     @Query(value = """
     SELECT * FROM device 
     JOIN JSON_TABLE(
@@ -52,7 +53,7 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     ON jt.feedId = :feedId
     LIMIT 1
     """, nativeQuery = true)
-    Optional<Device> findDeviceByFeedIdInJson(@Param("feedId") Long feedId);
+    Optional<Device> findDeviceByFeedIdInJson(@Param("feedId") long feedId);
 
     List<Device> findByType(DeviceType type);
 
