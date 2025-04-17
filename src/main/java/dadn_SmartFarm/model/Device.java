@@ -30,7 +30,7 @@ public class Device {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    Status status;
+    Status status = Status.INACTIVE;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

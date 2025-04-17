@@ -10,9 +10,21 @@ public class DeviceTriggerMapper {
         return DeviceTrigger.builder()
                 .id(deviceTriggerDTO.getId())
                 .status(deviceTriggerDTO.getStatus())
+                .valueSend(deviceTriggerDTO.getValueSend())
                 .thresholdCondition(deviceTriggerDTO.getCondition())
                 .sensorFeedKey(deviceTriggerDTO.getSensorFeedKey())
                 .controlFeedKey(deviceTriggerDTO.getControlFeedKey())
+                .build();
+    }
+
+    public DeviceTriggerDTO toDeviceTriggerDTO (DeviceTrigger deviceTrigger) {
+        return DeviceTriggerDTO.builder()
+                .id(deviceTrigger.getId())
+                .status(deviceTrigger.getStatus())
+                .valueSend(deviceTrigger.getValueSend())
+                .condition(deviceTrigger.getThresholdCondition())
+                .sensorFeedKey(deviceTrigger.getSensorFeedKey())
+                .controlFeedKey(deviceTrigger.getControlFeedKey())
                 .build();
     }
 }

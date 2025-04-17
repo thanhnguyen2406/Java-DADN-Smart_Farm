@@ -17,7 +17,8 @@ public class DeviceTrigger {
     long id;
 
     @Enumerated(EnumType.STRING)
-    Status status;
+    Status status = Status.INACTIVE;
+    String valueSend;
     String thresholdCondition;
     String sensorFeedKey;
     String controlFeedKey;

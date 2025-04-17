@@ -33,14 +33,11 @@ public class DeviceTriggerService implements IDeviceTriggerService {
         try{
             String sensorKey = deviceTriggerDTO.getSensorFeedKey();
             String controlKey = deviceTriggerDTO.getControlFeedKey();
+
             if (deviceTriggerRepository.existsBySensorFeedKeyAndControlFeedKeyAndThresholdCondition(sensorKey, controlKey, deviceTriggerDTO.getCondition()))
                 throw new AppException(ErrorCode.TRIGGER_EXISTED);
-            if (deviceRepository.existsFeedKey(sensorKey) == 0) {
-                throw new AppException(ErrorCode.FEED_SENSOR_NOT_FOUND);
-            }
-            if (deviceRepository.existsFeedKey(controlKey) == 0) {
-                throw new AppException(ErrorCode.FEED_CONTROL_NOT_FOUND);
-            }
+
+            checkTrigger(sensorKey, controlKey);
 
             DeviceTrigger deviceTrigger = deviceTriggerMapper.toDeviceTrigger(deviceTriggerDTO);
             deviceTrigger.setStatus(Status.INACTIVE);
@@ -92,10 +89,12 @@ public class DeviceTriggerService implements IDeviceTriggerService {
     @Override
     public Response updateTrigger(DeviceTriggerDTO deviceTriggerDTO) {
         try{
-            if (deviceTriggerRepository.existsById(deviceTriggerDTO.getId()))
+            if (!deviceTriggerRepository.existsById(deviceTriggerDTO.getId()))
                 throw new AppException(ErrorCode.TRIGGER_NOT_FOUND);
 
             DeviceTrigger deviceTrigger = deviceTriggerMapper.toDeviceTrigger(deviceTriggerDTO);
+
+            checkTrigger(deviceTrigger.getSensorFeedKey(), deviceTrigger.getControlFeedKey());
             deviceTriggerRepository.save(deviceTrigger);
 
             return Response.builder()
@@ -121,6 +120,7 @@ public class DeviceTriggerService implements IDeviceTriggerService {
             Device device = deviceRepository.findById(deviceId)
                     .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
             List<String> feedKeys = new ArrayList<>(device.getFeedsList().keySet());
+            System.out.println(feedKeys);
             Page<DeviceTrigger> triggers = deviceTriggerRepository.findBySensorFeedKeyIn(feedKeys, pageable);
             if(feedKeys.isEmpty() || triggers.getContent().isEmpty()) {
                 return Response.builder()
@@ -128,11 +128,12 @@ public class DeviceTriggerService implements IDeviceTriggerService {
                         .message("No triggers found for this device")
                         .build();
             }
-
+            List<DeviceTriggerDTO> dtos = triggers.getContent().stream()
+                    .map(deviceTriggerMapper::toDeviceTriggerDTO).toList();
             return Response.builder()
                     .code(200)
                     .message("Trigger of the device fetched successfully")
-                    .listDeviceTriggers(triggers.getContent())
+                    .listDeviceTriggersDTO(dtos)
                     .currentPage(triggers.getNumber())
                     .totalElements((int) triggers.getTotalElements())
                     .totalPages(triggers.getTotalPages())
@@ -147,6 +148,22 @@ public class DeviceTriggerService implements IDeviceTriggerService {
                     .code(500)
                     .message("Error while updating trigger: " + e.getMessage())
                     .build();
+        }
+    }
+
+
+    public void checkTrigger(String sensorKey, String controlKey) {
+        if (deviceRepository.existsFeedKey(sensorKey) <= 0) {
+            throw new AppException(ErrorCode.FEED_SENSOR_NOT_FOUND);
+        }
+        if (deviceRepository.existsFeedKey(controlKey) <= 0) {
+            throw new AppException(ErrorCode.FEED_CONTROL_NOT_FOUND);
+        }
+        if (deviceRepository.existsSensorTriggerFeedKey(sensorKey) <= 0) {
+            throw new AppException(ErrorCode.FEED_SENSOR_NOT_MATCH);
+        }
+        if (deviceRepository.existsControlFeedKey(controlKey) <= 0) {
+            throw new AppException(ErrorCode.FEED_CONTROL_NOT_MATCH);
         }
     }
 }

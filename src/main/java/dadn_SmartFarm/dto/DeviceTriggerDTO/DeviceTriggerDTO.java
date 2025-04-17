@@ -13,6 +13,8 @@ import lombok.experimental.FieldDefaults;
 public class DeviceTriggerDTO {
     long id;
     Status status;
+    @NotNull(message = "Please enter value that needed to be send")
+    String valueSend;
     @NotNull(message = "Please enter condition to trigger the feed")
     String condition;
     @NotNull(message = "Please enter sensor feed key")

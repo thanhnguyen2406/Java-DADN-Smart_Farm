@@ -1,5 +1,6 @@
 package dadn_SmartFarm.service.implement;
 
+import dadn_SmartFarm.dto.DataInfo.DataDTO;
 import dadn_SmartFarm.dto.DeviceDTO.DeviceDTO;
 import dadn_SmartFarm.dto.Response;
 import dadn_SmartFarm.exception.AppException;
@@ -10,17 +11,13 @@ import dadn_SmartFarm.model.FeedInfo;
 import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.model.enums.DeviceType;
 import dadn_SmartFarm.repository.DeviceRepository;
-import dadn_SmartFarm.repository.DeviceTriggerRepository;
-import dadn_SmartFarm.service.implement.MqttService;
+import dadn_SmartFarm.service.interf.IDataInfoService;
 import dadn_SmartFarm.service.interf.IDeviceService;
-import dadn_SmartFarm.utils.FeedEncoder;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,9 +28,9 @@ import java.util.Objects;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class DeviceService implements IDeviceService {
     DeviceRepository deviceRepository;
-    DeviceTriggerRepository deviceTriggerRepository;
     DeviceMapper deviceMapper;
     MqttService mqttService;
+    IDataInfoService dataInfoService;
 
     @Override
     public Response addDevice(DeviceDTO request) {
@@ -53,7 +50,7 @@ public class DeviceService implements IDeviceService {
     @Override
     public Response updateDevice(DeviceDTO request) {
         Device existingDevice = deviceRepository.findById(request.getId())
-                        .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
         existingDevice.setName(request.getName());
         existingDevice.setStatus(request.getStatus());
         existingDevice.setFeedsList(request.getFeedsList());
@@ -63,18 +60,25 @@ public class DeviceService implements IDeviceService {
         deviceRepository.save(existingDevice);
 
         //Connect with MQTT
-        if (existingDevice.getType() == DeviceType.SENSOR_DATA || existingDevice.getType() == DeviceType.SENSOR_TRIGGER) {
+        if (existingDevice.getType() == DeviceType.SENSOR) {
             if (existingDevice.getStatus() == Status.ACTIVE) {
-                if (existingDevice.getType() == DeviceType.SENSOR_TRIGGER) {
-                    List<String> feedKeys = new ArrayList<>(existingDevice.getFeedsList().keySet());
-                    if (!deviceTriggerRepository.existsBySensorFeedKeyIn(feedKeys)) {
-                        throw new AppException(ErrorCode.TRIGGER_DEVICE_NOT_FOUND);
-                    }
-                }
-                mqttService.connectDevice(existingDevice.getId(), existingDevice.getType(), existingDevice.getFeedsList());
+                mqttService.connectDevice(existingDevice.getId(), existingDevice.getFeedsList());
             } else if (existingDevice.getStatus() == Status.INACTIVE) {
                 mqttService.disconnectDevice(existingDevice.getId());
             }
+        } else {
+            existingDevice.getFeedsList().forEach((s, feedInfo) -> {
+                DataDTO dataDTO = new DataDTO();
+
+                dataDTO.setFeed_key(s);
+                dataDTO.setFeed_id(feedInfo.getFeedId());
+                if (existingDevice.getStatus() == Status.ACTIVE) {
+                    dataDTO.setValue("1");
+                } else if (existingDevice.getStatus() == Status.INACTIVE) {
+                    dataDTO.setValue("0");
+                }
+                dataInfoService.sendData(dataDTO);
+            });
         }
         return Response.builder()
                 .code(200)
@@ -94,7 +98,41 @@ public class DeviceService implements IDeviceService {
                 .build();
     }
 
-//    @Override
+    public boolean checkFeedsList(String typeService, Device device) {
+        Map<String, FeedInfo> currentFeeds = device.getFeedsList();
+
+        if (currentFeeds == null || currentFeeds.isEmpty()) {
+            return false;
+        }
+
+        if ("add".equalsIgnoreCase(typeService)) {
+            List<Map<String, Long>> feedsList = deviceRepository.findAllFeeds();
+
+            return feedsList.stream().anyMatch(existingFeeds ->
+                    existingFeeds.entrySet().stream()
+                            .anyMatch(entry ->
+                                    currentFeeds.containsKey(entry.getKey()) &&
+                                            currentFeeds.get(entry.getKey()).equals(entry.getValue())
+                            )
+            );
+        }
+
+        if ("update".equalsIgnoreCase(typeService)) {
+            List<Device> otherDevices = deviceRepository.findByIdNot(device.getId());
+
+            return otherDevices.stream().anyMatch(otherDevice -> {
+                Map<String, FeedInfo> otherFeeds = otherDevice.getFeedsList();
+                return otherFeeds != null && otherFeeds.entrySet().stream()
+                        .anyMatch(entry ->
+                                currentFeeds.containsKey(entry.getKey()) &&
+                                        currentFeeds.get(entry.getKey()).equals(entry.getValue())
+                        );
+            });
+        }
+        return false;
+    }
+
+    //    @Override
 //    public Response encodeDevice(long id) {
 //        Device existingDevice = deviceRepository.findById(id)
 //                .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
