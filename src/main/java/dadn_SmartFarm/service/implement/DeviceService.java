@@ -163,41 +163,6 @@ public class DeviceService implements IDeviceService {
 //                .build();
 //    }
 
-    public boolean checkFeedsList(String typeService, Device device) {
-        Map<String, FeedInfo> currentFeeds = device.getFeedsList();
-
-        if (currentFeeds == null || currentFeeds.isEmpty()) {
-            return false;
-        }
-
-        if ("add".equalsIgnoreCase(typeService)) {
-            List<Map<String, Long>> feedsList = deviceRepository.findAllFeeds();
-
-            return feedsList.stream().anyMatch(existingFeeds ->
-                    existingFeeds.entrySet().stream()
-                            .anyMatch(entry ->
-                                    currentFeeds.containsKey(entry.getKey()) &&
-                                            currentFeeds.get(entry.getKey()).equals(entry.getValue())
-                            )
-            );
-        }
-
-        if ("update".equalsIgnoreCase(typeService)) {
-            List<Device> otherDevices = deviceRepository.findByIdNot(device.getId());
-
-            return otherDevices.stream().anyMatch(otherDevice -> {
-                Map<String, FeedInfo> otherFeeds = otherDevice.getFeedsList();
-                return otherFeeds != null && otherFeeds.entrySet().stream()
-                        .anyMatch(entry ->
-                                currentFeeds.containsKey(entry.getKey()) &&
-                                        currentFeeds.get(entry.getKey()).equals(entry.getValue())
-                        );
-            });
-        }
-
-        return false;
-    }
-
     public boolean checkFeedIdExists(Long deviceId, Long feedId) {
         return deviceRepository.findById(deviceId)
                 .map(device -> device.getFeedsList().values().stream()

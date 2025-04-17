@@ -30,7 +30,7 @@ public class SensorDataCollectorService {
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
     public void collectSensorData(){
-        List<Device> sensorDevices = deviceRepository.findByType(DeviceType.SENSOR_DATA);
+        List<Device> sensorDevices = deviceRepository.findByType(DeviceType.SENSOR);
         log.info("Collecting sensor data from {} devices.", sensorDevices.size());
 
         for(Device device : sensorDevices){
