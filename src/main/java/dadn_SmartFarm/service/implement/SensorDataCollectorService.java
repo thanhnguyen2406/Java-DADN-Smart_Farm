@@ -26,6 +26,7 @@ import java.util.Map;
 public class SensorDataCollectorService {
     private final DeviceRepository deviceRepository;
     private final StatisticRepository statisticRepository;
+    private final AdafruitClientService adafruitClientService;
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
     public void collectSensorData(){
@@ -46,7 +47,7 @@ public class SensorDataCollectorService {
                 }
 
                 try{
-                    double currentValue = 0;            // This place will use some logic to get the value of that feedId
+                    double currentValue = adafruitClientService.getFeedValue(feedInfo.getFeedId());            // This place will use some logic to get the value of that feedId
 
                     Statistic statistic = Statistic.builder()
                             .feedId(feedInfo.getFeedId())

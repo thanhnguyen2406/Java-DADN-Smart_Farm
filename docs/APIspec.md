@@ -531,3 +531,59 @@
         "authenticated": false
     }
     ```
+    
+### Statistic APIs
+- **URL**: `GET /smart-farm/statistic?feedId={feedId}&date={date}`
+- **Description**: Dùng để lấy dữ liệu thô và thống kê của 1 ngày cụ thể mà user muốn kiểm tra, cứ cách 10' dữ liệu sẽ lưu vào db 1 lần, 1 ngày có 24 tiếng -> 1 ngày trả về ~144 điểm dữ liệu.
+- **Example**: `GET /smart-farm/statistic?feedId=3023665&date=2025-04-16`
+- **Response**:
+  - `200`: Success
+  ```json
+    {
+    "code": 200,
+    "message": "Statistic for 2025-04-16 fetched successfully",
+    "authenticated": true,
+    "data": [
+        {
+        "value": 0.0,
+        "timeStamp": "2025-04-16T22:15:53"
+        },
+        {
+        "value": 0.0,
+        "timeStamp": "2025-04-16T22:25:53"
+        },
+        {
+        "value": 0.0,
+        "timeStamp": "2025-04-16T22:35:53"
+        },
+        {
+        "value": 0.0,
+        "timeStamp": "2025-04-16T22:45:53"
+        },
+        {
+        "value": 0.0,
+        "timeStamp": "2025-04-16T22:55:53"
+        },
+        {
+        "value": 0.0,
+        "timeStamp": "2025-04-16T23:05:53"
+        },
+        {
+        "value": 0.0,
+        "timeStamp": "2025-04-16T23:15:53"
+        },
+        {
+        "value": 0.0,
+        "timeStamp": "2025-04-16T23:25:53"
+        },
+        {
+        "value": 0.0,
+        "timeStamp": "2025-04-16T23:35:53"
+        }
+    ],
+    "max": 0.0,
+    "min": 0.0,
+    "average": 0.0,
+    "threshold": false
+    }
+    ```
