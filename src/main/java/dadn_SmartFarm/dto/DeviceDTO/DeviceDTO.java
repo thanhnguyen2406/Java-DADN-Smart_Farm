@@ -1,5 +1,6 @@
 package dadn_SmartFarm.dto.DeviceDTO;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import dadn_SmartFarm.model.FeedInfo;
 import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.model.enums.DeviceType;
@@ -12,10 +13,11 @@ import java.util.Map;
 
 @Data
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DeviceDTO {
     long id;
-    long roomId;
+    Long roomId;
     String name;
     DeviceType type;
     Status status;

@@ -23,7 +23,7 @@ public class RoomController {
     }
 
     @GetMapping()
-    public GetRoomResponse getRoom() {
+    public GetRoomResponse getRoomByUser() {
         return roomService.getRoomResponse();
     }
 
@@ -33,13 +33,13 @@ public class RoomController {
     }
 
     @GetMapping("/encode/{id}")
-    public ResponseEntity<Response> assignDevice(@PathVariable("id") long id) {
+    public ResponseEntity<Response> encodeRoom(@PathVariable("id") long id) {
         Response response = roomService.encodeRoom(id);
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
     @GetMapping("/assign")
-    public ResponseEntity<Response> assignDevice(@RequestParam String encodedRoom) {
+    public ResponseEntity<Response> assignRoom(@RequestParam String encodedRoom) {
         Response response = roomService.assignRoom(encodedRoom);
         return ResponseEntity.status(response.getCode()).body(response);
     }

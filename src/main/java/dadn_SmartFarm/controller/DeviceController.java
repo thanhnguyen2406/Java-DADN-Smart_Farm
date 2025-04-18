@@ -1,9 +1,12 @@
 package dadn_SmartFarm.controller;
 
 import dadn_SmartFarm.dto.DeviceDTO.DeviceDTO;
+import dadn_SmartFarm.dto.DeviceDTO.DeviceRoomDTO;
 import dadn_SmartFarm.dto.Response;
 import dadn_SmartFarm.service.interf.IDeviceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,15 +34,34 @@ public class DeviceController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
-//    @GetMapping("/encode/{id}")
-//    public ResponseEntity<Response> assignDevice(@PathVariable("id") long id) {
-//        Response response = deviceService.encodeDevice(id);
-//        return ResponseEntity.status(response.getCode()).body(response);
-//    }
-//
-//    @GetMapping("/assign")
-//    public ResponseEntity<Response> assignDevice(@RequestParam String encodedFeeds) {
-//        Response response = deviceService.assignDevice(encodedFeeds);
-//        return ResponseEntity.status(response.getCode()).body(response);
-//    }
+    @PostMapping("/assign-room")
+    public ResponseEntity<Response> assignDeviceToRoom(@RequestBody DeviceRoomDTO request) {
+        Response response = deviceService.assignDeviceToRoom(request);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @PostMapping("/dismiss-room/{id}")
+    public ResponseEntity<Response> dismissDeviceToRoom(@PathVariable long id) {
+        Response response = deviceService.dismissDeviceToRoom(id);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @GetMapping("/room/{id}")
+    public ResponseEntity<Response> getDevicesByRoomId(
+            @PathVariable long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Response response = deviceService.getDevicesByRoomId(id, pageable);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @GetMapping("/unassign")
+    public ResponseEntity<Response> getUnassignedDevices(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Response response = deviceService.getUnassignedDevices(pageable);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
 }

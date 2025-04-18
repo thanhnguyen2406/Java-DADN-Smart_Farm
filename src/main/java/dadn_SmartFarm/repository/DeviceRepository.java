@@ -3,6 +3,8 @@ package dadn_SmartFarm.repository;
 import dadn_SmartFarm.model.Device;
 import dadn_SmartFarm.model.enums.DeviceType;
 import dadn_SmartFarm.model.enums.Status;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -42,6 +44,20 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     AND JSON_EXTRACT(feeds_list, CONCAT('$.', :controlKey)) IS NOT NULL
     """, nativeQuery = true)
     long existsControlFeedKey(@Param("controlKey") String controlKey);
+    @Query(value = """
+    SELECT * FROM device 
+    JOIN JSON_TABLE(
+      JSON_EXTRACT(feeds_list, '$'),
+      '$.*' COLUMNS (
+        feedId BIGINT PATH '$.feedId'
+      )
+    ) AS jt
+    ON jt.feedId = :feedId
+    LIMIT 1
+    """, nativeQuery = true)
+    Optional<Device> findDeviceByFeedIdInJson(@Param("feedId") Long feedId);
+
+    List<Device> findByType(DeviceType type);
 
     @Query(value = """
     SELECT * FROM device 
@@ -57,5 +73,5 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     Optional<Device> findDeviceByFeedIdInJson(@Param("feedId") long feedId);
 
     List<Device> findByTypeAndStatus(DeviceType type, Status status);
-
+    Page<Device> findByRoomId(Long id, Pageable pageable);
 }
