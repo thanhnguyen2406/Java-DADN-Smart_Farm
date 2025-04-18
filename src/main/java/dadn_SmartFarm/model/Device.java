@@ -21,12 +21,10 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    long roomId;
+    Long roomId = null;
 
     @Column(nullable = false)
     String name;
-
-//    String userEmail;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

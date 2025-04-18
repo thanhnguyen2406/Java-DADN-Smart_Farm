@@ -23,7 +23,7 @@ public class RoomController {
     }
 
     @GetMapping()
-    public GetRoomResponse getRoom() {
+    public GetRoomResponse getRoomByUser() {
         return roomService.getRoomResponse();
     }
 

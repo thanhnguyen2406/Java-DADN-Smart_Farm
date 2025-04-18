@@ -26,6 +26,7 @@ public class Application {
 			System.setProperty("JWT_SIGNER_KEY", dotenv.get("JWT_SIGNER_KEY", ""));
 			System.setProperty("ADAFRUIT_USERNAME", dotenv.get("ADAFRUIT_USERNAME", ""));
 			System.setProperty("ADAFRUIT_X_AIO_KEY", dotenv.get("ADAFRUIT_X_AIO_KEY", ""));
+			System.setProperty("ADAFRUIT_BROKER_URL", dotenv.get("ADAFRUIT_BROKER_URL", ""));
 		}
 
 		SpringApplication.run(Application.class, args);

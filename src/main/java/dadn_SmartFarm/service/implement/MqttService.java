@@ -28,13 +28,16 @@ public class MqttService {
 
     private final DeviceTriggerRepository deviceTriggerRepository;
 
-    private static final String BROKER_URL = "tcp://io.adafruit.com:1883";
+    @Value("${ADAFRUIT_BROKER_URL}")
+    private String BROKER_URL;
 
     @Value("${ADAFRUIT_USERNAME}")
     private String username;
 
     @Value("${ADAFRUIT_X_AIO_KEY}")
     private String aioKey;
+
+    private boolean triggerValueFlag = false;
 
     // Dùng Map để lưu MQTT clients của mỗi device
     private final Map<Long, MqttClient> deviceClients = new ConcurrentHashMap<>();
@@ -105,6 +108,8 @@ public class MqttService {
                                 handleThresholdExceeded(deviceId, feedKey, "MAX", value);
                             } else if (feedInfo.getThreshold_min() != null && value < feedInfo.getThreshold_min()) {
                                 handleThresholdExceeded(deviceId, feedKey, "MIN", value);
+                            } else {
+                                triggerValueFlag = false;
                             }
 
                         } catch (Exception e) {
@@ -214,16 +219,19 @@ public class MqttService {
     }
 
     private void handleThresholdExceeded(Long deviceId, String feedKey, String thresholdType, double value) {
-        log.warn("Device {}: [{}] exceeded {} threshold with value {}", deviceId, feedKey, thresholdType, value);
-        List<DeviceTrigger> deviceTriggerList = deviceTriggerRepository.findBySensorFeedKeyAndStatusAndThresholdCondition(
-                feedKey,
-                Status.ACTIVE,
-                thresholdType
-        );
-        System.out.println(deviceTriggerList);
-        deviceTriggerList.forEach((deviceTrigger) -> {
-            publishMessage(deviceId, deviceTrigger.getControlFeedKey(), deviceTrigger.getValueSend());
-        });
+        if (!triggerValueFlag) {
+            triggerValueFlag = true;
+            log.warn("Device {}: [{}] exceeded {} threshold with value {}", deviceId, feedKey, thresholdType, value);
+            List<DeviceTrigger> deviceTriggerList = deviceTriggerRepository.findBySensorFeedKeyAndStatusAndThresholdCondition(
+                    feedKey,
+                    Status.ACTIVE,
+                    thresholdType
+            );
+            System.out.println(deviceTriggerList);
+            deviceTriggerList.forEach((deviceTrigger) -> {
+                publishMessage(deviceId, deviceTrigger.getControlFeedKey(), deviceTrigger.getValueSend());
+            });
+        }
     }
 
 }

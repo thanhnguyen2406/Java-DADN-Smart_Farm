@@ -2,6 +2,7 @@ package dadn_SmartFarm.service.implement;
 
 import dadn_SmartFarm.dto.DataInfo.DataDTO;
 import dadn_SmartFarm.dto.DeviceDTO.DeviceDTO;
+import dadn_SmartFarm.dto.DeviceDTO.DeviceRoomDTO;
 import dadn_SmartFarm.dto.Response;
 import dadn_SmartFarm.exception.AppException;
 import dadn_SmartFarm.exception.ErrorCode;
@@ -11,11 +12,14 @@ import dadn_SmartFarm.model.FeedInfo;
 import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.model.enums.DeviceType;
 import dadn_SmartFarm.repository.DeviceRepository;
+import dadn_SmartFarm.repository.RoomRepository;
 import dadn_SmartFarm.service.interf.IDataInfoService;
 import dadn_SmartFarm.service.interf.IDeviceService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +33,7 @@ import java.util.Objects;
 public class DeviceService implements IDeviceService {
     DeviceRepository deviceRepository;
     DeviceMapper deviceMapper;
+    RoomRepository roomRepository;
     MqttService mqttService;
     IDataInfoService dataInfoService;
 
@@ -98,6 +103,127 @@ public class DeviceService implements IDeviceService {
                 .build();
     }
 
+    @Override
+    public Response assignDeviceToRoom(DeviceRoomDTO request) {
+        try {
+            if (!roomRepository.existsById(request.getRoomId())) {
+                throw new AppException(ErrorCode.ROOM_NOT_FOUND);
+            }
+            Device existingDevice = deviceRepository.findById(request.getDeviceId())
+                    .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
+            existingDevice.setRoomId(request.getRoomId());
+            deviceRepository.save(existingDevice);
+            return Response.builder()
+                    .code(200)
+                    .message("Device assigned to room successfully")
+                    .build();
+        } catch (AppException e) {
+            return Response.builder()
+                    .code(e.getErrorCode().getCode())
+                    .message(e.getErrorCode().getMessage())
+                    .build();
+        } catch (Exception e) {
+            return Response.builder()
+                    .code(500)
+                    .message("Error while assigning device to room: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public Response dismissDeviceToRoom(long id) {
+        try {
+            Device existingDevice = deviceRepository.findById(id)
+                    .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
+            existingDevice.setRoomId(null);
+            deviceRepository.save(existingDevice);
+            return Response.builder()
+                    .code(200)
+                    .message("Device dismissed from room successfully")
+                    .build();
+        } catch (AppException e) {
+            return Response.builder()
+                    .code(e.getErrorCode().getCode())
+                    .message(e.getErrorCode().getMessage())
+                    .build();
+        } catch (Exception e) {
+            return Response.builder()
+                    .code(500)
+                    .message("Error while dismissing device from room: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public Response getDevicesByRoomId(long id, Pageable pageable) {
+        try {
+            if (!roomRepository.existsById(id)) {
+                throw new AppException(ErrorCode.ROOM_NOT_FOUND);
+            }
+            Page<Device> devicePage = deviceRepository.findByRoomId(id, pageable);
+            if (devicePage.isEmpty()) {
+                return Response.builder()
+                        .code(200)
+                        .message("No devices found")
+                        .build();
+            }
+
+            List<DeviceDTO> deviceList = devicePage.getContent().stream().map(deviceMapper::toDeviceDTO).toList();
+            return Response.builder()
+                    .code(200)
+                    .message("All devices of rooms fetched successfully")
+                    .listDeviceDTO(deviceList)
+                    .currentPage(devicePage.getNumber())
+                    .totalElements((int) devicePage.getTotalElements())
+                    .totalPages(devicePage.getTotalPages())
+                    .build();
+        } catch (AppException e) {
+            return Response.builder()
+                    .code(e.getErrorCode().getCode())
+                    .message(e.getErrorCode().getMessage())
+                    .build();
+        } catch (Exception e) {
+            return Response.builder()
+                    .code(500)
+                    .message("Error while fetching device from room: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public Response getUnassignedDevices(Pageable pageable) {
+        try {
+            Page<Device> devicePage = deviceRepository.findByRoomId(null, pageable);
+            if (devicePage.isEmpty()) {
+                return Response.builder()
+                        .code(200)
+                        .message("No devices found")
+                        .build();
+            }
+
+            List<DeviceDTO> deviceList = devicePage.getContent().stream().map(deviceMapper::toDeviceDTO).toList();
+            return Response.builder()
+                    .code(200)
+                    .message("All unassigned devices of rooms fetched successfully")
+                    .listDeviceDTO(deviceList)
+                    .currentPage(devicePage.getNumber())
+                    .totalElements((int) devicePage.getTotalElements())
+                    .totalPages(devicePage.getTotalPages())
+                    .build();
+        } catch (AppException e) {
+            return Response.builder()
+                    .code(e.getErrorCode().getCode())
+                    .message(e.getErrorCode().getMessage())
+                    .build();
+        } catch (Exception e) {
+            return Response.builder()
+                    .code(500)
+                    .message("Error while fetching unassigned device from room: " + e.getMessage())
+                    .build();
+        }
+    }
+
+
     public boolean checkFeedsList(String typeService, Device device) {
         Map<String, FeedInfo> currentFeeds = device.getFeedsList();
 
@@ -132,36 +258,8 @@ public class DeviceService implements IDeviceService {
         return false;
     }
 
-    //    @Override
-//    public Response encodeDevice(long id) {
-//        Device existingDevice = deviceRepository.findById(id)
-//                .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
-//        String encodedFeeds = FeedEncoder.encodeFeeds(existingDevice.getFeedsList());
-//        return Response.builder()
-//                .code(200)
-//                .message("Device encoded successfully")
-//                .encodedFeeds(encodedFeeds)
-//                .build();
-//    }
-//
-//    @Override
-//    public Response assignDevice(String encodedFeeds) {
-//        if (!FeedEncoder.isValidEncodedString(encodedFeeds)) {
-//            throw new AppException(ErrorCode.ENCODED_DEVICE_INVALID);
-//        }
-//        Map<String, FeedInfo> feeds = FeedEncoder.decodeFeeds(encodedFeeds);
-//        Device existingDevice = deviceRepository.findByFeedsList(feeds);
-//
-//        var context = SecurityContextHolder.getContext();
-//        String email = context.getAuthentication().getName();
-//
-//        existingDevice.setUserEmail(email);
-//        deviceRepository.save(existingDevice);
-//        return Response.builder()
-//                .code(200)
-//                .message("Device has assigned successfully")
-//                .build();
-//    }
+
+
     public boolean checkFeedIdExists(Long deviceId, Long feedId) {
         return deviceRepository.findById(deviceId)
                 .map(device -> device.getFeedsList().values().stream()

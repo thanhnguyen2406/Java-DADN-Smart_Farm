@@ -73,4 +73,34 @@ INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
  '{"entrydetector":{"feedId":3023620,"threshold_max":1.0,"threshold_min":0.0}}'),
 
 (20, 10, 'Smart Controller 9', 'INACTIVE', 'CONTROL',
- '{"lampcontrol":{"feedId":3023621,"threshold_max":100.0,"threshold_min":20.0}}');
+ '{"lampcontrol":{"feedId":3023621,"threshold_max":100.0,"threshold_min":20.0}}'),
+
+ (21, NULL, 'Smart Sensor 12', 'INACTIVE', 'SENSOR',
+  '{"smoke":{"feedId":3023622,"threshold_max":300.0,"threshold_min":50.0}}'),
+
+ (22, NULL, 'Smart Controller 10', 'INACTIVE', 'CONTROL',
+  '{"fancontrol":{"feedId":3023623,"threshold_max":100.0,"threshold_min":40.0}}'),
+
+ (23, NULL, 'Smart Sensor 13', 'INACTIVE', 'SENSOR',
+  '{"temperature":{"feedId":3023624,"threshold_max":40.0,"threshold_min":5.0}}'),
+
+ (24, NULL, 'Smart Controller 11', 'INACTIVE', 'CONTROL',
+  '{"pumpcontrol":{"feedId":3023625,"threshold_max":90.0,"threshold_min":30.0}}'),
+
+ (25, NULL, 'Smart Sensor 14', 'INACTIVE', 'SENSOR',
+  '{"humidity":{"feedId":3023626,"threshold_max":85.0,"threshold_min":20.0}}'),
+
+ (26, NULL, 'Smart Controller 12', 'INACTIVE', 'CONTROL',
+  '{"waterlevel":{"feedId":3023627,"threshold_max":100.0,"threshold_min":10.0}}'),
+
+ (27, NULL, 'Smart Sensor 15', 'INACTIVE', 'SENSOR',
+  '{"light":{"feedId":3023628,"threshold_max":1000.0,"threshold_min":100.0}}'),
+
+ (28, NULL, 'Smart Controller 13', 'INACTIVE', 'CONTROL',
+  '{"ledcontrol":{"feedId":3023629,"threshold_max":255.0,"threshold_min":0.0}}'),
+
+ (29, NULL, 'Smart Sensor 16', 'INACTIVE', 'SENSOR',
+  '{"pressure":{"feedId":3023630,"threshold_max":200.0,"threshold_min":50.0}}'),
+
+ (30, NULL, 'Smart Controller 14', 'INACTIVE', 'CONTROL',
+  '{"sprayer":{"feedId":3023631,"threshold_max":100.0,"threshold_min":25.0}}');

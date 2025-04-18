@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class DeviceMapper {
 
-    private final RoomRepository roomRepository;
-
     public Device toDevice (DeviceDTO dto) {
         return Device.builder()
                 .roomId(dto.getRoomId())
@@ -19,6 +17,17 @@ public class DeviceMapper {
                 .type(dto.getType())
                 .status(dto.getStatus())
                 .feedsList(dto.getFeedsList())
+                .build();
+    }
+
+    public DeviceDTO toDeviceDTO (Device device) {
+        return DeviceDTO.builder()
+                .id(device.getId())
+                .roomId(device.getRoomId())
+                .name(device.getName())
+                .type(device.getType())
+                .status(device.getStatus())
+                .feedsList(device.getFeedsList())
                 .build();
     }
 }
