@@ -2,6 +2,7 @@ package dadn_SmartFarm.repository;
 
 import dadn_SmartFarm.model.Device;
 import dadn_SmartFarm.model.enums.DeviceType;
+import dadn_SmartFarm.model.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -69,6 +70,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     """, nativeQuery = true)
     Optional<Device> findDeviceByFeedIdInJson(@Param("feedId") long feedId);
 
-    List<Device> findByType(DeviceType type);
+    List<Device> findByTypeAndStatus(DeviceType type, Status status);
 
 }

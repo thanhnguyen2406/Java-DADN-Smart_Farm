@@ -4,6 +4,7 @@ import dadn_SmartFarm.model.Device;
 import dadn_SmartFarm.model.FeedInfo;
 import dadn_SmartFarm.model.Statistic;
 import dadn_SmartFarm.model.enums.DeviceType;
+import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.repository.DeviceRepository;
 import dadn_SmartFarm.repository.StatisticRepository;
 import lombok.AccessLevel;
@@ -30,7 +31,7 @@ public class SensorDataCollectorService {
 
     @Scheduled(fixedRate = 10 * 60 * 1000)
     public void collectSensorData(){
-        List<Device> sensorDevices = deviceRepository.findByType(DeviceType.SENSOR);
+        List<Device> sensorDevices = deviceRepository.findByTypeAndStatus(DeviceType.SENSOR, Status.ACTIVE);
         log.info("Collecting sensor data from {} devices.", sensorDevices.size());
 
         for(Device device : sensorDevices){
