@@ -56,4 +56,19 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
 
     List<Device> findByType(DeviceType type);
 
+    @Query(value = """
+    SELECT * FROM device 
+    JOIN JSON_TABLE(
+      JSON_EXTRACT(feeds_list, '$'),
+      '$.*' COLUMNS (
+        feedId BIGINT PATH '$.feedId'
+      )
+    ) AS jt
+    ON jt.feedId = :feedId
+    LIMIT 1
+    """, nativeQuery = true)
+    Optional<Device> findDeviceByFeedIdInJson(@Param("feedId") long feedId);
+
+    List<Device> findByType(DeviceType type);
+
 }
