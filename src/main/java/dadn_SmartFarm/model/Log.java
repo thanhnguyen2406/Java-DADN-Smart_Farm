@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @Builder
@@ -13,17 +15,18 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Log {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
     @Enumerated(EnumType.STRING)
     LogType logType;
 
     @Column(nullable = false)
-    long device_id;
-
-    @Column(nullable = false)
-    String message;
+    String feedKey;
 
     @Column(nullable = true)
     String value;
+
+    @Column(nullable = false)
+    LocalDateTime createdAt;
 }

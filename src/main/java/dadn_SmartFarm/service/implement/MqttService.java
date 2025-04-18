@@ -1,11 +1,14 @@
 package dadn_SmartFarm.service.implement;
 
+import dadn_SmartFarm.dto.LogDTO.LogDTO;
 import dadn_SmartFarm.model.Device;
 import dadn_SmartFarm.model.DeviceTrigger;
 import dadn_SmartFarm.model.FeedInfo;
+import dadn_SmartFarm.model.enums.LogType;
 import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.repository.DeviceRepository;
 import dadn_SmartFarm.repository.DeviceTriggerRepository;
+import dadn_SmartFarm.service.interf.ILogService;
 import jakarta.annotation.PreDestroy;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +16,13 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.*;
 
 @Service
@@ -25,8 +31,8 @@ import java.util.concurrent.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MqttService {
     private final DeviceRepository deviceRepository;
-
     private final DeviceTriggerRepository deviceTriggerRepository;
+    private final ILogService logService;
 
     @Value("${ADAFRUIT_BROKER_URL}")
     private String BROKER_URL;
@@ -38,11 +44,12 @@ public class MqttService {
     private String aioKey;
 
     private boolean triggerValueFlag = false;
+    private boolean isMqttConnected = false;
 
-    // Dùng Map để lưu MQTT clients của mỗi device
     private final Map<Long, MqttClient> deviceClients = new ConcurrentHashMap<>();
+    private final Map<String, List<Double>> feedDataBuffer = new ConcurrentHashMap<>();
+    private final Map<String, Long> feedLastReceivedTime = new ConcurrentHashMap<>();
 
-    // ExecutorService để chạy multi-threading
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     public void connectDevice(Long deviceId, Map<String, FeedInfo> feedsList) {
@@ -65,13 +72,13 @@ public class MqttService {
                     @Override
                     public void connectionLost(Throwable cause) {
                         log.error("Device {} lost connection: {}", deviceId, cause.getMessage());
+                        isMqttConnected = false;
                     }
 
                     @Override
                     public void connectComplete(boolean reconnect, String serverURI) {
                         log.info("Device {} {}", deviceId, reconnect ? "reconnected" : "connected");
-
-                        // Tạo thread riêng cho từng feed
+                        isMqttConnected = true;
                         feedsList.forEach((feedKey, feedId) -> executorService.submit(() -> subscribeToFeed(deviceId, feedKey)));
                     }
 
@@ -81,7 +88,6 @@ public class MqttService {
                             String feedKey = extractFeedKeyFromTopic(topic);
                             String payload = new String(message.getPayload());
 
-                            // Kiểm tra payload có hợp lệ không
                             if (payload.isEmpty()) {
                                 log.warn("Received empty message for device {} from feed {}", deviceId, feedKey);
                                 return;
@@ -96,8 +102,9 @@ public class MqttService {
                             }
 
                             log.info("Device {} received: [{}] {}", deviceId, feedKey, value);
+                            feedDataBuffer.computeIfAbsent(feedKey, k -> new ArrayList<>()).add(value);
+                            feedLastReceivedTime.put(feedKey, System.currentTimeMillis());
 
-                            // Lấy thông tin feed
                             FeedInfo feedInfo = getFeedInfo(deviceId, feedKey);
                             if (feedInfo == null) {
                                 log.warn("FeedInfo not found for device {} and feed {}", deviceId, feedKey);
@@ -117,7 +124,6 @@ public class MqttService {
                         }
                     }
 
-
                     @Override
                     public void deliveryComplete(IMqttDeliveryToken token) {
                         log.info("Device {}: Message delivered", deviceId);
@@ -127,7 +133,6 @@ public class MqttService {
                 client.connect(options);
                 deviceClients.put(deviceId, client);
 
-                // Tạo thread riêng để subscribe từng feed
                 feedsList.forEach((feedKey, feedId) -> executorService.submit(() -> subscribeToFeed(deviceId, feedKey)));
 
                 log.info("Device {} connected to MQTT feeds: {}", deviceId, feedsList.keySet());
@@ -179,6 +184,7 @@ public class MqttService {
                 try {
                     client.disconnect();
                     log.info("Device {} disconnected.", deviceId);
+                    isMqttConnected = false;
                 } catch (MqttException e) {
                     log.error("Error disconnecting device {}: {}", deviceId, e.getMessage());
                 }
@@ -210,7 +216,6 @@ public class MqttService {
     }
 
     private String extractFeedKeyFromTopic(String topic) {
-        // Topic có dạng: "username/feeds/feedKey"
         String[] parts = topic.split("/");
         if (parts.length >= 3) {
             return parts[2];
@@ -221,16 +226,49 @@ public class MqttService {
     private void handleThresholdExceeded(Long deviceId, String feedKey, String thresholdType, double value) {
         if (!triggerValueFlag) {
             triggerValueFlag = true;
+
             log.warn("Device {}: [{}] exceeded {} threshold with value {}", deviceId, feedKey, thresholdType, value);
             List<DeviceTrigger> deviceTriggerList = deviceTriggerRepository.findBySensorFeedKeyAndStatusAndThresholdCondition(
                     feedKey,
                     Status.ACTIVE,
                     thresholdType
             );
-            System.out.println(deviceTriggerList);
             deviceTriggerList.forEach((deviceTrigger) -> {
                 publishMessage(deviceId, deviceTrigger.getControlFeedKey(), deviceTrigger.getValueSend());
             });
+
+            LogDTO logDTO = LogDTO.builder()
+                    .feedKey(feedKey)
+                    .logType(Objects.equals(thresholdType, "MAX") ? LogType.TRIGGER_MAX : LogType.TRIGGER_MIN)
+                    .value(String.valueOf(value))
+                    .build();
+            logService.createLog(logDTO);
+        }
+    }
+
+    @Scheduled(fixedRate = 60 * 1000)
+    public void logSensorDataPeriodically() {
+        if (isMqttConnected) {
+            long currentTime = System.currentTimeMillis();
+
+            feedDataBuffer.forEach((feedKey, values) -> {
+                if (!values.isEmpty()) {
+                    long lastReceivedTime = feedLastReceivedTime.get(feedKey);
+                    if (currentTime - lastReceivedTime <= 60 * 1000) {
+                        double averageValue = values.stream().mapToDouble(val -> val).average().orElse(0.0);
+
+                        LogDTO logDTO = LogDTO.builder()
+                                .feedKey(feedKey)
+                                .logType(LogType.DATA)
+                                .value(String.valueOf(averageValue))
+                                .build();
+                        logService.createLog(logDTO);
+                    }
+                }
+            });
+
+            feedDataBuffer.clear();
+            feedLastReceivedTime.clear();
         }
     }
 
