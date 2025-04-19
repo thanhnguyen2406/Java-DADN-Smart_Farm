@@ -258,8 +258,6 @@ public class DeviceService implements IDeviceService {
         return false;
     }
 
-
-
     public boolean checkFeedIdExists(Long deviceId, Long feedId) {
         return deviceRepository.findById(deviceId)
                 .map(device -> device.getFeedsList().values().stream()

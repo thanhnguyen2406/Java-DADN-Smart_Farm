@@ -19,7 +19,7 @@ INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
  '{"humid":{"feedId":3023601,"threshold_max":30.5,"threshold_min":1.0},"tempair":{"feedId":3023602,"threshold_max":70.0,"threshold_min":4.0}}'),
 
 (2, 1, 'Smart Sensor 2', 'INACTIVE', 'CONTROL',
- '{"fan":{"feedId":3023603,"threshold_max":40.0,"threshold_min":15.0}}'),
+ '{"fan":{"feedId":3023664,"threshold_max":40.0,"threshold_min":15.0}}'),
 
 (3, 2, 'Smart Sensor 3', 'INACTIVE', 'SENSOR',
  '{"lightsensor":{"feedId":3060578,"threshold_max":900.0,"threshold_min":100.0}}'),

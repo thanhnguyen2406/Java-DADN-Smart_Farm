@@ -45,6 +45,7 @@ public class MqttService {
 
     private boolean triggerValueFlag = false;
     private boolean isMqttConnected = false;
+    private List<DeviceTrigger> deviceTriggerNowList = List.of();
 
     private final Map<Long, MqttClient> deviceClients = new ConcurrentHashMap<>();
     private final Map<String, List<Double>> feedDataBuffer = new ConcurrentHashMap<>();
@@ -113,9 +114,12 @@ public class MqttService {
 
                             if (feedInfo.getThreshold_max() != null && value > feedInfo.getThreshold_max()) {
                                 handleThresholdExceeded(deviceId, feedKey, "MAX", value);
+                                triggerValueFlag = true;
                             } else if (feedInfo.getThreshold_min() != null && value < feedInfo.getThreshold_min()) {
                                 handleThresholdExceeded(deviceId, feedKey, "MIN", value);
+                                triggerValueFlag = true;
                             } else {
+                                handleThresholdExceeded(deviceId, feedKey, "DEFAULT", value);
                                 triggerValueFlag = false;
                             }
 
@@ -224,16 +228,14 @@ public class MqttService {
     }
 
     private void handleThresholdExceeded(Long deviceId, String feedKey, String thresholdType, double value) {
-        if (!triggerValueFlag) {
-            triggerValueFlag = true;
-
+        if (!triggerValueFlag && (thresholdType.equals("MAX") || thresholdType.equals("MIN") )) {
             log.warn("Device {}: [{}] exceeded {} threshold with value {}", deviceId, feedKey, thresholdType, value);
-            List<DeviceTrigger> deviceTriggerList = deviceTriggerRepository.findBySensorFeedKeyAndStatusAndThresholdCondition(
+            deviceTriggerNowList = deviceTriggerRepository.findBySensorFeedKeyAndStatusAndThresholdCondition(
                     feedKey,
                     Status.ACTIVE,
                     thresholdType
             );
-            deviceTriggerList.forEach((deviceTrigger) -> {
+            deviceTriggerNowList.forEach((deviceTrigger) -> {
                 publishMessage(deviceId, deviceTrigger.getControlFeedKey(), deviceTrigger.getValueSend());
             });
 
@@ -243,6 +245,12 @@ public class MqttService {
                     .value(String.valueOf(value))
                     .build();
             logService.createLog(logDTO);
+        }
+        else if (thresholdType.equals("DEFAULT") && !deviceTriggerNowList.isEmpty()) {
+            deviceTriggerNowList.forEach((deviceTrigger) -> {
+                publishMessage(deviceId, deviceTrigger.getControlFeedKey(), "0");
+            });
+            deviceTriggerNowList = null;
         }
     }
 
