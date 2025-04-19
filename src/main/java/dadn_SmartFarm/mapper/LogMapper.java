@@ -16,4 +16,14 @@ public class LogMapper {
                 .createdAt(logDTO.getCreatedAt())
                 .build();
     }
+
+    public LogDTO toLogDTO (Log log) {
+        return LogDTO.builder()
+                .id(log.getId())
+                .logType(log.getLogType())
+                .feedKey(log.getFeedKey())
+                .value(log.getValue())
+                .createdAt(log.getCreatedAt())
+                .build();
+    }
 }

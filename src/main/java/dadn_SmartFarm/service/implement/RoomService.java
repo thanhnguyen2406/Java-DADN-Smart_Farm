@@ -2,6 +2,7 @@ package dadn_SmartFarm.service.implement;
 
 import dadn_SmartFarm.dto.Response;
 import dadn_SmartFarm.dto.RoomDTO.RoomDtoModel.RoomResponseInfo;
+import dadn_SmartFarm.dto.RoomDTO.RoomRequest.CreateRoomRequest;
 import dadn_SmartFarm.dto.RoomDTO.RoomRequest.UpdateRoomRequest;
 import dadn_SmartFarm.dto.RoomDTO.RoomResponse.CreateRoomResponse;
 import dadn_SmartFarm.dto.RoomDTO.RoomResponse.GetRoomResponse;
@@ -31,16 +32,17 @@ public class RoomService implements IRoomService {
     private RoomKeyUtil roomKeyUtil;
 
     @Override
-    public CreateRoomResponse createRoom(String roomName) {
+    public CreateRoomResponse createRoom(CreateRoomRequest request) {
         Room room = new Room();
-        room.setName(roomName);
+        room.setName(request.getName());
+        room.setRoomKey(request.getRoomKey());
         roomRepository.save(room);
 
         return CreateRoomResponse.builder()
                 .code(200)
                 .message("Success")
                 .id(room.getId())
-                .name(roomName)
+                .name(request.getName())
                 .build();
     }
 
@@ -67,13 +69,13 @@ public class RoomService implements IRoomService {
     @Override
     public UpdateRoomResponse updateRoom(UpdateRoomRequest updateRoomRequest) {
         long roomId = updateRoomRequest.getId();
-        String newName = updateRoomRequest.getName();
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Room room = roomRepository.findByIdAndUsername(roomId, email)
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-        room.setName(newName);
+        room.setName(updateRoomRequest.getName());
+        room.setRoomKey(updateRoomRequest.getRoomKey());
         roomRepository.save(room);
 
         return UpdateRoomResponse.builder()

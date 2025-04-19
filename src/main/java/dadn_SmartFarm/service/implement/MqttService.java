@@ -254,7 +254,7 @@ public class MqttService {
         }
     }
 
-    @Scheduled(fixedRate = 60 * 1000)
+    @Scheduled(fixedRate = 60 * 60 * 1000)
     public void logSensorDataPeriodically() {
         if (isMqttConnected) {
             long currentTime = System.currentTimeMillis();

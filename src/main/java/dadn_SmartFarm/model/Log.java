@@ -1,5 +1,6 @@
 package dadn_SmartFarm.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import dadn_SmartFarm.model.enums.LogType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,5 +29,6 @@ public class Log {
     String value;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Ho_Chi_Minh")
     LocalDateTime createdAt;
 }

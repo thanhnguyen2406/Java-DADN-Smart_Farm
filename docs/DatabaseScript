@@ -1,106 +1,197 @@
 USE smart_farm;
 
+-- password : 123
 INSERT INTO user (id, email, password, name) VALUES
-(1, 'alice@example.com', 'password123', 'Alice'),
-(2, 'bob@example.com', 'password123', 'Bob'),
-(3, 'carol@example.com', 'password123', 'Carol'),
-(4, 'dave@example.com', 'password123', 'Dave'),
-(5, 'eve@example.com', 'password123', 'Eve');
+(1, 'user1@gmail.com', '$2a$05$Mp1u.UN0jSUA.ykjBovVpuEGvYaUOTFmK29dKnX8S7JuOckMap8xy', 'Alice'),
+(2, 'user2@gmail.com', '$2a$05$Mp1u.UN0jSUA.ykjBovVpuEGvYaUOTFmK29dKnX8S7JuOckMap8xy', 'Bob'),
+(3, 'user3@gmail.com', '$2a$05$Mp1u.UN0jSUA.ykjBovVpuEGvYaUOTFmK29dKnX8S7JuOckMap8xy', 'Carol'),
+(4, 'user4@gmail.com', '$2a$05$Mp1u.UN0jSUA.ykjBovVpuEGvYaUOTFmK29dKnX8S7JuOckMap8xy', 'Dave'),
+(5, 'user5@gmail.com', '$2a$05$Mp1u.UN0jSUA.ykjBovVpuEGvYaUOTFmK29dKnX8S7JuOckMap8xy', 'Eve');
 
-INSERT INTO room (id, name) VALUES
-(1, 'Room 1'), (2, 'Room 2'),
-(3, 'Room 3'), (4, 'Room 4'),
-(5, 'Room 5'), (6, 'Room 6'),
-(7, 'Room 7'), (8, 'Room 8'),
-(9, 'Room 9'), (10, 'Room 10');
+INSERT INTO room (id, name, room_key) VALUES
+(1, 'Room 1', 'room1'),
+(2, 'Room 2', 'room2'),
+(3, 'Room 3', 'room3'),
+(4, 'Room 4', 'room4'),
+(5, 'Room 5', 'room5'),
+(6, 'Room 6', 'room6'),
+(7, 'Room 7', 'room7'),
+(8, 'Room 8', 'room8'),
+(9, 'Room 9', 'room9'),
+(10, 'Room 10', 'room10');
 
 INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
 (1, 1, 'Smart Sensor 1', 'INACTIVE', 'SENSOR',
- '{"humid":{"feedId":3023601,"threshold_max":30.5,"threshold_min":1.0},"tempair":{"feedId":3023602,"threshold_max":70.0,"threshold_min":4.0}}'),
+ '{"room1.humid":{"feedId":3023601,"threshold_max":30.5,"threshold_min":1.0},"room1.tempair":{"feedId":3023602,"threshold_max":70.0,"threshold_min":4.0}}'),
 
 (2, 1, 'Smart Sensor 2', 'INACTIVE', 'CONTROL',
- '{"fan":{"feedId":3023664,"threshold_max":40.0,"threshold_min":15.0}}'),
+ '{"fan":{"feedId":3023664,"threshold_max":10.0,"threshold_min":0.0}}'),
 
 (3, 2, 'Smart Sensor 3', 'INACTIVE', 'SENSOR',
- '{"lightsensor":{"feedId":3060578,"threshold_max":900.0,"threshold_min":100.0}}'),
+ '{"light-sensor":{"feedId":3060578,"threshold_max":900.0,"threshold_min":100.0}}'),
 
 (4, 2, 'Smart Controller 1', 'INACTIVE', 'CONTROL',
- '{"ventilationfan":{"feedId":3023605,"threshold_max":100.0,"threshold_min":30.0}}'),
+ '{"room2.ventilationfan":{"feedId":3023605,"threshold_max":10.0,"threshold_min":0.0}}'),
 
 (5, 3, 'Smart Sensor 4', 'INACTIVE', 'SENSOR',
- '{"soilmoisture":{"feedId":3023606,"threshold_max":90.0,"threshold_min":10.0}}'),
+ '{"room3.soilmoisture":{"feedId":3023606,"threshold_max":90.0,"threshold_min":10.0}}'),
 
 (6, 3, 'Smart Controller 2', 'INACTIVE', 'CONTROL',
- '{"irrigationpump":{"feedId":3023607,"threshold_max":100.0,"threshold_min":20.0}}'),
+ '{"room3.irrigationpump":{"feedId":3023607,"threshold_max":10.0,"threshold_min":0.0}}'),
 
 (7, 4, 'Smart Sensor 5', 'INACTIVE', 'SENSOR',
- '{"gasdetector":{"feedId":3023608,"threshold_max":300.0,"threshold_min":50.0}}'),
+ '{"room4.gasdetector":{"feedId":3023608,"threshold_max":300.0,"threshold_min":50.0}}'),
 
 (8, 4, 'Smart Controller 3', 'INACTIVE', 'CONTROL',
- '{"emergencyalarm":{"feedId":3023609,"threshold_max":1.0,"threshold_min":0.0}}'),
+ '{"room4.emergencyalarm":{"feedId":3023609,"threshold_max":10.0,"threshold_min":0.0}}'),
 
 (9, 5, 'Smart Sensor 6', 'INACTIVE', 'SENSOR',
- '{"motionsensor":{"feedId":3023610,"threshold_max":1.0,"threshold_min":0.0}}'),
+ '{"room5.motionsensor":{"feedId":3023610,"threshold_max":1.0,"threshold_min":0.0}}'),
 
 (10, 5, 'Smart Controller 4', 'INACTIVE', 'CONTROL',
- '{"lightcontrol":{"feedId":3023611,"threshold_max":100.0,"threshold_min":10.0}}'),
+ '{"room5.lightcontrol":{"feedId":3023611,"threshold_max":10.0,"threshold_min":0.0}}'),
 
 (11, 6, 'Smart Sensor 7', 'INACTIVE', 'SENSOR',
- '{"doorsensor":{"feedId":3023612,"threshold_max":1.0,"threshold_min":0.0}}'),
+ '{"room6.doorsensor":{"feedId":3023612,"threshold_max":1.0,"threshold_min":0.0}}'),
 
 (12, 6, 'Smart Controller 5', 'INACTIVE', 'CONTROL',
- '{"windowactuator":{"feedId":3023613,"threshold_max":1.0,"threshold_min":0.0}}'),
+ '{"room6.windowactuator":{"feedId":3023613,"threshold_max":10.0,"threshold_min":0.0}}'),
 
 (13, 7, 'Smart Sensor 8', 'INACTIVE', 'SENSOR',
- '{"ambienttemp":{"feedId":3023614,"threshold_max":35.0,"threshold_min":10.0}}'),
+ '{"room7.ambienttemp":{"feedId":3023614,"threshold_max":35.0,"threshold_min":10.0}}'),
 
 (14, 7, 'Smart Controller 6', 'INACTIVE', 'CONTROL',
- '{"coolingfan":{"feedId":3023615,"threshold_max":100.0,"threshold_min":30.0}}'),
+ '{"room7.coolingfan":{"feedId":3023615,"threshold_max":10.0,"threshold_min":0.0}}'),
 
 (15, 8, 'Smart Sensor 9', 'INACTIVE', 'SENSOR',
- '{"soundlevel":{"feedId":3023616,"threshold_max":90.0,"threshold_min":30.0}}'),
+ '{"room8.soundlevel":{"feedId":3023616,"threshold_max":90.0,"threshold_min":30.0}}'),
 
 (16, 8, 'Smart Controller 7', 'INACTIVE', 'CONTROL',
- '{"audiospeaker":{"feedId":3023617,"threshold_max":100.0,"threshold_min":20.0}}'),
+ '{"room8.audiospeaker":{"feedId":3023617,"threshold_max":10.0,"threshold_min":0.0}}'),
 
 (17, 9, 'Smart Sensor 10', 'INACTIVE', 'SENSOR',
- '{"vibrationsensor":{"feedId":3023618,"threshold_max":5.0,"threshold_min":0.5}}'),
+ '{"room9.vibrationsensor":{"feedId":3023618,"threshold_max":5.0,"threshold_min":0.5}}'),
 
 (18, 9, 'Smart Controller 8', 'INACTIVE', 'CONTROL',
- '{"motordriver":{"feedId":3023619,"threshold_max":100.0,"threshold_min":50.0}}'),
+ '{"room9.motordriver":{"feedId":3023619,"threshold_max":10.0,"threshold_min":0.0}}'),
 
 (19, 10, 'Smart Sensor 11', 'INACTIVE', 'SENSOR',
- '{"entrydetector":{"feedId":3023620,"threshold_max":1.0,"threshold_min":0.0}}'),
+ '{"room10.entrydetector":{"feedId":3023620,"threshold_max":1.0,"threshold_min":0.0}}'),
 
 (20, 10, 'Smart Controller 9', 'INACTIVE', 'CONTROL',
- '{"lampcontrol":{"feedId":3023621,"threshold_max":100.0,"threshold_min":20.0}}'),
+ '{"room10.lampcontrol":{"feedId":3023621,"threshold_max":10.0,"threshold_min":0.0}}'),
 
- (21, NULL, 'Smart Sensor 12', 'INACTIVE', 'SENSOR',
-  '{"smoke":{"feedId":3023622,"threshold_max":300.0,"threshold_min":50.0}}'),
+(21, NULL, 'Smart Sensor 12', 'INACTIVE', 'SENSOR',
+ '{"smoke":{"feedId":3023622,"threshold_max":300.0,"threshold_min":50.0}}'),
 
- (22, NULL, 'Smart Controller 10', 'INACTIVE', 'CONTROL',
-  '{"fancontrol":{"feedId":3023623,"threshold_max":100.0,"threshold_min":40.0}}'),
+(22, NULL, 'Smart Controller 10', 'INACTIVE', 'CONTROL',
+ '{"fancontrol":{"feedId":3023623,"threshold_max":10.0,"threshold_min":0.0}}'),
 
- (23, NULL, 'Smart Sensor 13', 'INACTIVE', 'SENSOR',
-  '{"temperature":{"feedId":3023624,"threshold_max":40.0,"threshold_min":5.0}}'),
+(23, NULL, 'Smart Sensor 13', 'INACTIVE', 'SENSOR',
+ '{"temperature":{"feedId":3023624,"threshold_max":40.0,"threshold_min":5.0}}'),
 
- (24, NULL, 'Smart Controller 11', 'INACTIVE', 'CONTROL',
-  '{"pumpcontrol":{"feedId":3023625,"threshold_max":90.0,"threshold_min":30.0}}'),
+(24, NULL, 'Smart Controller 11', 'INACTIVE', 'CONTROL',
+ '{"pumpcontrol":{"feedId":3023625,"threshold_max":10.0,"threshold_min":0.0}}'),
 
- (25, NULL, 'Smart Sensor 14', 'INACTIVE', 'SENSOR',
-  '{"humidity":{"feedId":3023626,"threshold_max":85.0,"threshold_min":20.0}}'),
+(25, NULL, 'Smart Sensor 14', 'INACTIVE', 'SENSOR',
+ '{"humidity":{"feedId":3023626,"threshold_max":85.0,"threshold_min":20.0}}'),
 
- (26, NULL, 'Smart Controller 12', 'INACTIVE', 'CONTROL',
-  '{"waterlevel":{"feedId":3023627,"threshold_max":100.0,"threshold_min":10.0}}'),
+(26, NULL, 'Smart Controller 12', 'INACTIVE', 'CONTROL',
+ '{"waterlevel":{"feedId":3023627,"threshold_max":10.0,"threshold_min":0.0}}'),
 
- (27, NULL, 'Smart Sensor 15', 'INACTIVE', 'SENSOR',
-  '{"light":{"feedId":3023628,"threshold_max":1000.0,"threshold_min":100.0}}'),
+(27, NULL, 'Smart Sensor 15', 'INACTIVE', 'SENSOR',
+ '{"light":{"feedId":3023628,"threshold_max":1000.0,"threshold_min":100.0}}'),
 
- (28, NULL, 'Smart Controller 13', 'INACTIVE', 'CONTROL',
-  '{"ledcontrol":{"feedId":3023629,"threshold_max":255.0,"threshold_min":0.0}}'),
+(28, NULL, 'Smart Controller 13', 'INACTIVE', 'CONTROL',
+ '{"ledcontrol":{"feedId":3023629,"threshold_max":10.0,"threshold_min":0.0}}'),
 
- (29, NULL, 'Smart Sensor 16', 'INACTIVE', 'SENSOR',
-  '{"pressure":{"feedId":3023630,"threshold_max":200.0,"threshold_min":50.0}}'),
+(29, NULL, 'Smart Sensor 16', 'INACTIVE', 'SENSOR',
+ '{"pressure":{"feedId":3023630,"threshold_max":200.0,"threshold_min":50.0}}'),
 
- (30, NULL, 'Smart Controller 14', 'INACTIVE', 'CONTROL',
-  '{"sprayer":{"feedId":3023631,"threshold_max":100.0,"threshold_min":25.0}}');
+(30, NULL, 'Smart Controller 14', 'INACTIVE', 'CONTROL',
+ '{"sprayer":{"feedId":3023631,"threshold_max":10.0,"threshold_min":0.0}}');
+
+
+INSERT INTO device_trigger (status, value_send, threshold_condition, sensor_feed_key, control_feed_key) VALUES
+('INACTIVE', '1', 'MAX', 'room1.humid', 'fan'),
+
+('INACTIVE', '1', 'MAX', 'room1.tempair', 'room2.ventilationfan'),
+
+('INACTIVE', '1', 'MAX', 'light-sensor', 'fan'),
+
+('INACTIVE', '1', 'MIN', 'room3.soilmoisture', 'room3.irrigationpump'),
+
+('INACTIVE', '1', 'MAX', 'room4.gasdetector', 'room4.emergencyalarm'),
+
+('INACTIVE', '1', 'MAX', 'room5.motionsensor', 'room5.lightcontrol'),
+
+('INACTIVE', '1', 'MAX', 'room6.doorsensor', 'room6.windowactuator'),
+
+('INACTIVE', '1', 'MAX', 'room7.ambienttemp', 'room7.coolingfan'),
+
+('INACTIVE', '1', 'MAX', 'room8.soundlevel', 'room8.audiospeaker'),
+
+('INACTIVE', '1', 'MAX', 'room9.vibrationsensor', 'room9.motordriver'),
+
+('INACTIVE', '1', 'MIN', 'entrydetector', 'lampcontrol'),
+
+('INACTIVE', '1', 'MAX', 'smoke', 'fancontrol'),
+
+('INACTIVE', '1', 'MAX', 'temperature', 'pumpcontrol'),
+
+('INACTIVE', '1', 'MIN', 'humidity', 'waterlevel'),
+
+('INACTIVE', '1', 'MAX', 'light', 'ledcontrol'),
+
+('INACTIVE', '1', 'MAX', 'pressure', 'sprayer'),
+
+('INACTIVE', '1', 'MAX', 'room1.humid', 'fan'),
+
+('INACTIVE', '1', 'MAX', 'room1.tempair', 'ventilationfan'),
+
+('INACTIVE', '1', 'MIN', 'room3.soilmoisture', 'irrigationpump'),
+
+('INACTIVE', '1', 'MAX', 'room5.motionsensor', 'lightcontrol');
+
+INSERT INTO log (log_type, feed_key, value, created_at) VALUES
+-- Device 1: room1.humid
+('DATA', 'room1.humid', '25.3', '2025-04-18 10:15'),
+('DATA', 'room1.humid', '26.0', '2025-04-18 11:00'),
+('TRIGGER_MIN', 'room1.humid', '0.8', '2025-04-18 12:00'),
+('DATA', 'room1.humid', '27.1', '2025-04-18 13:00'),
+('TRIGGER_MAX', 'room1.humid', '31.0', '2025-04-18 14:00'),
+
+-- Device 1: room1.tempair
+('DATA', 'room1.tempair', '22.5', '2025-04-18 10:00'),
+('DATA', 'room1.tempair', '23.1', '2025-04-18 11:15'),
+('TRIGGER_MIN', 'room1.tempair', '3.9', '2025-04-18 12:15'),
+('TRIGGER_MAX', 'room1.tempair', '71.2', '2025-04-18 13:15'),
+('DATA', 'room1.tempair', '24.0', '2025-04-18 14:15'),
+
+-- Device 2: fan
+('DATA', 'fan', '5.0', '2025-04-18 09:30'),
+('TRIGGER_MIN', 'fan', '-1.0', '2025-04-18 10:30'),
+('DATA', 'fan', '4.8', '2025-04-18 11:30'),
+('TRIGGER_MAX', 'fan', '11.0', '2025-04-18 12:30'),
+('DATA', 'fan', '5.5', '2025-04-18 13:30'),
+
+-- Device 3: light-sensor
+('DATA', 'light-sensor', '500.0', '2025-04-18 08:45'),
+('TRIGGER_MIN', 'light-sensor', '80.0', '2025-04-18 09:45'),
+('TRIGGER_MAX', 'light-sensor', '950.0', '2025-04-18 10:45'),
+('DATA', 'light-sensor', '600.0', '2025-04-18 11:45'),
+('DATA', 'light-sensor', '620.0', '2025-04-18 12:45'),
+
+-- Device 4: room2.ventilationfan
+('DATA', 'room2.ventilationfan', '6.0', '2025-04-18 08:00'),
+('TRIGGER_MIN', 'room2.ventilationfan', '-0.5', '2025-04-18 09:00'),
+('DATA', 'room2.ventilationfan', '7.1', '2025-04-18 10:00'),
+('TRIGGER_MAX', 'room2.ventilationfan', '11.0', '2025-04-18 11:00'),
+('DATA', 'room2.ventilationfan', '6.5', '2025-04-18 12:00'),
+
+-- Device 5: room3.soilmoisture
+('DATA', 'room3.soilmoisture', '60.0', '2025-04-18 07:30'),
+('TRIGGER_MIN', 'room3.soilmoisture', '5.0', '2025-04-18 08:30'),
+('DATA', 'room3.soilmoisture', '70.0', '2025-04-18 09:30'),
+('TRIGGER_MAX', 'room3.soilmoisture', '95.0', '2025-04-18 10:30'),
+('DATA', 'room3.soilmoisture', '80.0', '2025-04-18 11:30');

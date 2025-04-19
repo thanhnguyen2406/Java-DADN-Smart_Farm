@@ -23,8 +23,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query("SELECT d.id from Device d where d.roomId = :roomId")
     Optional<List<Long>> findIdByRoomId(@Param("roomId") long roomId);
 
-//    Device findByFeedsList(Map<String, FeedInfo> feedsList);
-
     @Query(value = """
     SELECT COUNT(*) 
     FROM device 
@@ -69,8 +67,9 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     LIMIT 1
     """, nativeQuery = true)
     Optional<Device> findDeviceByFeedIdInJson(@Param("feedId") Long feedId);
-
-
+    
     List<Device> findByTypeAndStatus(DeviceType type, Status status);
     Page<Device> findByRoomId(Long id, Pageable pageable);
+
+    List<Device> findByStatus(Status status);
 }

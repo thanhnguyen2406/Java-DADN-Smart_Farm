@@ -19,7 +19,7 @@ public class RoomController {
 
     @PostMapping("/add")
     public CreateRoomResponse createRoom(@RequestBody CreateRoomRequest request) {
-        return roomService.createRoom(request.getName());
+        return roomService.createRoom(request);
     }
 
     @GetMapping()

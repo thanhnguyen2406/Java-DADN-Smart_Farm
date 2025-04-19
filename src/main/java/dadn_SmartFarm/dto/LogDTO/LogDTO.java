@@ -1,5 +1,6 @@
 package dadn_SmartFarm.dto.LogDTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import dadn_SmartFarm.model.enums.LogType;
 import jakarta.persistence.Column;
@@ -21,5 +22,6 @@ public class LogDTO {
     LogType logType;
     String feedKey;
     String value;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Ho_Chi_Minh")
     LocalDateTime createdAt;
 }

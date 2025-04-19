@@ -21,6 +21,9 @@ public class Room {
     @Column(nullable = false)
     String name;
 
+    @Column(nullable = false, unique = true)
+    String roomKey;
+
     @ElementCollection
     List<String> listUsername;
 }

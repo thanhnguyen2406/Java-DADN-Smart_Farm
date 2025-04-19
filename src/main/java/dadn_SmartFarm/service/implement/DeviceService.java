@@ -9,12 +9,14 @@ import dadn_SmartFarm.exception.ErrorCode;
 import dadn_SmartFarm.mapper.DeviceMapper;
 import dadn_SmartFarm.model.Device;
 import dadn_SmartFarm.model.FeedInfo;
+import dadn_SmartFarm.model.Room;
 import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.model.enums.DeviceType;
 import dadn_SmartFarm.repository.DeviceRepository;
 import dadn_SmartFarm.repository.RoomRepository;
 import dadn_SmartFarm.service.interf.IDataInfoService;
 import dadn_SmartFarm.service.interf.IDeviceService;
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,6 +39,21 @@ public class DeviceService implements IDeviceService {
     RoomRepository roomRepository;
     MqttService mqttService;
     IDataInfoService dataInfoService;
+
+    @PostConstruct
+    public void initActiveDevices() {
+        new Thread(() -> {
+            try {
+                List<Device> activeDevices = deviceRepository.findByStatus(Status.ACTIVE);
+                for (Device device : activeDevices) {
+                    connectMqtt(device);
+                }
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
 
     @Override
     public Response addDevice(DeviceDTO request) {
@@ -56,6 +74,16 @@ public class DeviceService implements IDeviceService {
     public Response updateDevice(DeviceDTO request) {
         Device existingDevice = deviceRepository.findById(request.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
+        Map<String, FeedInfo> newFeedsList = request.getFeedsList();
+        Map<String, FeedInfo> oldFeedsList = existingDevice.getFeedsList();
+        for (Map.Entry<String, FeedInfo> entry : newFeedsList.entrySet()) {
+            String newFeedKey = entry.getKey();
+            if (oldFeedsList.containsKey(newFeedKey))
+                continue;
+            if (deviceRepository.existsFeedKey(newFeedKey) > 0)
+                throw new AppException(ErrorCode.FEED_EXISTED);
+        }
+
         existingDevice.setName(request.getName());
         existingDevice.setStatus(request.getStatus());
         existingDevice.setFeedsList(request.getFeedsList());
@@ -64,27 +92,8 @@ public class DeviceService implements IDeviceService {
         }
         deviceRepository.save(existingDevice);
 
-        //Connect with MQTT
-        if (existingDevice.getType() == DeviceType.SENSOR) {
-            if (existingDevice.getStatus() == Status.ACTIVE) {
-                mqttService.connectDevice(existingDevice.getId(), existingDevice.getFeedsList());
-            } else if (existingDevice.getStatus() == Status.INACTIVE) {
-                mqttService.disconnectDevice(existingDevice.getId());
-            }
-        } else {
-            existingDevice.getFeedsList().forEach((s, feedInfo) -> {
-                DataDTO dataDTO = new DataDTO();
+        connectMqtt(existingDevice);
 
-                dataDTO.setFeed_key(s);
-                dataDTO.setFeed_id(feedInfo.getFeedId());
-                if (existingDevice.getStatus() == Status.ACTIVE) {
-                    dataDTO.setValue("1");
-                } else if (existingDevice.getStatus() == Status.INACTIVE) {
-                    dataDTO.setValue("0");
-                }
-                dataInfoService.sendData(dataDTO);
-            });
-        }
         return Response.builder()
                 .code(200)
                 .message("Device updated successfully")
@@ -106,13 +115,24 @@ public class DeviceService implements IDeviceService {
     @Override
     public Response assignDeviceToRoom(DeviceRoomDTO request) {
         try {
-            if (!roomRepository.existsById(request.getRoomId())) {
-                throw new AppException(ErrorCode.ROOM_NOT_FOUND);
-            }
+            Room room = roomRepository.findById(request.getRoomId())
+                    .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
             Device existingDevice = deviceRepository.findById(request.getDeviceId())
                     .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
             existingDevice.setRoomId(request.getRoomId());
+
+            Map<String, FeedInfo> feedsList = existingDevice.getFeedsList();
+            Map<String, FeedInfo> updatedFeedsList = new HashMap<>();
+            for (Map.Entry<String, FeedInfo> entry : feedsList.entrySet()) {
+                String oldKey = entry.getKey();
+                FeedInfo value = entry.getValue();
+                System.out.println(room.getRoomKey());
+                String newKey = room.getRoomKey() + "." + oldKey;
+                updatedFeedsList.put(newKey, value);
+            }
+            existingDevice.setFeedsList(updatedFeedsList);
             deviceRepository.save(existingDevice);
+
             return Response.builder()
                     .code(200)
                     .message("Device assigned to room successfully")
@@ -135,6 +155,19 @@ public class DeviceService implements IDeviceService {
         try {
             Device existingDevice = deviceRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.DEVICE_NOT_FOUND));
+            Map<String, FeedInfo> feedsList = existingDevice.getFeedsList();
+            Map<String, FeedInfo> updatedFeedsList = new HashMap<>();
+
+            for (Map.Entry<String, FeedInfo> entry : feedsList.entrySet()) {
+                String oldKey = entry.getKey();
+                FeedInfo value = entry.getValue();
+                String[] parts = oldKey.split("\\.");
+                String newKey = parts.length > 1 ? parts[1] : oldKey;
+                updatedFeedsList.put(newKey, value);
+            }
+
+            existingDevice.setFeedsList(updatedFeedsList);
+
             existingDevice.setRoomId(null);
             deviceRepository.save(existingDevice);
             return Response.builder()
@@ -281,5 +314,28 @@ public class DeviceService implements IDeviceService {
                         .findFirst())
                 .map(FeedInfo::getThreshold_min)
                 .orElse(Double.NaN);
+    }
+
+    public void connectMqtt(Device existingDevice) {
+        if (existingDevice.getType() == DeviceType.SENSOR) {
+            if (existingDevice.getStatus() == Status.ACTIVE) {
+                mqttService.connectDevice(existingDevice.getId(), existingDevice.getFeedsList());
+            } else if (existingDevice.getStatus() == Status.INACTIVE) {
+                mqttService.disconnectDevice(existingDevice.getId());
+            }
+        } else {
+            existingDevice.getFeedsList().forEach((s, feedInfo) -> {
+                DataDTO dataDTO = new DataDTO();
+
+                dataDTO.setFeed_key(s);
+                dataDTO.setFeed_id(feedInfo.getFeedId());
+                if (existingDevice.getStatus() == Status.ACTIVE) {
+                    dataDTO.setValue("1");
+                } else if (existingDevice.getStatus() == Status.INACTIVE) {
+                    dataDTO.setValue("0");
+                }
+                dataInfoService.sendData(dataDTO);
+            });
+        }
     }
 }
