@@ -1,6 +1,7 @@
 package dadn_SmartFarm.model.enums;
 
 public enum LogType {
-    Censor,
-    Control
+    DATA,
+    TRIGGER_MAX,
+    TRIGGER_MIN
 }

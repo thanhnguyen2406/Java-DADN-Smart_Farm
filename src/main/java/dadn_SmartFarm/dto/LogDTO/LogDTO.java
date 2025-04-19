@@ -1,34 +1,27 @@
-package dadn_SmartFarm.model;
+package dadn_SmartFarm.dto.LogDTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import dadn_SmartFarm.model.enums.LogType;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Log {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class LogDTO {
     long id;
-
-    @Enumerated(EnumType.STRING)
     LogType logType;
-
-    @Column(nullable = false)
     String feedKey;
-
-    @Column(nullable = true)
     String value;
-
-    @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Ho_Chi_Minh")
     LocalDateTime createdAt;
 }

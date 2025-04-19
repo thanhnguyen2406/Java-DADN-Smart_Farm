@@ -31,9 +31,8 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-//                request.requestMatchers("/auth/**", "/users/register").permitAll()
-//                        .anyRequest().authenticated()
-                request.anyRequest().permitAll()
+                request.requestMatchers("/auth/**", "/users/register").permitAll()
+                        .anyRequest().authenticated()
         );
 
         httpSecurity.oauth2ResourceServer(oauth2 ->

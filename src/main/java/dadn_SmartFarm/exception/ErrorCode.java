@@ -30,7 +30,7 @@ public enum ErrorCode {
     FEED_ID_NOT_FOUND(404, "Feed id not found"),
     ROOM_NOT_FOUND(404, "Room not found"),
     SCHEDULE_NOT_FOUND(404, "Schedule not found"),
-
+    LOG_NOT_FOUND(404, "Log not found"),
 
     //409: Resource existed errors
     USER_EXISTED(409, "User already existed"),

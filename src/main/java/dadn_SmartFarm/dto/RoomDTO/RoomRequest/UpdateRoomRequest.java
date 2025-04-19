@@ -11,4 +11,5 @@ import lombok.experimental.FieldDefaults;
 public class UpdateRoomRequest {
     long id;
     String name;
+    String roomKey;
 }
