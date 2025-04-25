@@ -20,11 +20,25 @@ INSERT INTO room (id, name, room_key) VALUES
 (9, 'Room 9', 'room9'),
 (10, 'Room 10', 'room10');
 
+insert into room_list_username (room_id, list_username) values
+(1, 'user1@gmail.com'),
+(2, 'user1@gmail.com'),
+(3, 'user2@gmail.com'),
+(4, 'user2@gmail.com'),
+(5, 'user3@gmail.com'),
+(6, 'user3@gmail.com'),
+(7, 'user4@gmail.com'),
+(8, 'user4@gmail.com'),
+(9, 'user5@gmail.com'),
+(10,'user5@gmail.com');
+
+
+
 INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
 (1, 1, 'Smart Sensor 1', 'INACTIVE', 'SENSOR',
  '{"room1.humid":{"feedId":3023601,"threshold_max":30.5,"threshold_min":1.0},"room1.tempair":{"feedId":3023602,"threshold_max":70.0,"threshold_min":4.0}}'),
 
-(2, 1, 'Smart Sensor 2', 'INACTIVE', 'CONTROL',
+(2, 1, 'Smart Control 2', 'INACTIVE', 'CONTROL',
  '{"fan":{"feedId":3023664,"threshold_max":10.0,"threshold_min":0.0}}'),
 
 (3, 2, 'Smart Sensor 3', 'INACTIVE', 'SENSOR',
@@ -195,3 +209,18 @@ INSERT INTO log (log_type, feed_key, value, created_at) VALUES
 ('DATA', 'room3.soilmoisture', '70.0', '2025-04-18 09:30'),
 ('TRIGGER_MAX', 'room3.soilmoisture', '95.0', '2025-04-18 10:30'),
 ('DATA', 'room3.soilmoisture', '80.0', '2025-04-18 11:30');
+
+-- Schedule: schedule_type is DAILY
+insert into schedule(id, device_id, feed_id, status, description, schedule_type, time_from, time_to) values
+(1, 2, 3023664, 'ACTIVE', "Cooling dragon fruit", "DAILY", "11:05", "11:07"),
+(2, 6, 3023607, 'ACTIVE', 'Watering', 'DAILY', "11:05", "11:07");
+
+-- Schedule: schedule_type is WEEKLY
+insert into schedule(id, device_id, feed_id, status, description, schedule_type, week_day, time_from, time_to) values
+(3, 2, 3023664, 'ACTIVE', 'cooling dragon fruit', 'WEEKLY', 'TUESDAY', "12:00", "12:02"),
+(4, 6, 3023607, 'ACTIVE', 'Watering', 'WEEKLY', 'WEDNESDAY', "12:00", "12:02");
+
+-- Schedule: schedule_type is ONCE
+insert into schedule(id, device_id, feed_id, status, description, schedule_type, start_date, end_date, time_from, time_to) values
+(5, 2, 3023664, 'ACTIVE', 'cooling dragon fruit', 'ONCE', '2025-04-26', '2025-04-27', '13:00', '13:02'),
+(6, 6, 3023607, 'ACTIVE', 'Watering', 'ONCE', '2025-04-26', '2025-04-27', '13:00', '13:02');
