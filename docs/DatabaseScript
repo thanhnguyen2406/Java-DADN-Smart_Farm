@@ -1,4 +1,4 @@
-USE smart_farm;
+USE defaultdb;
 
 -- password : 123
 INSERT INTO user (id, email, password, name) VALUES
@@ -9,7 +9,7 @@ INSERT INTO user (id, email, password, name) VALUES
 (5, 'user5@gmail.com', '$2a$05$Mp1u.UN0jSUA.ykjBovVpuEGvYaUOTFmK29dKnX8S7JuOckMap8xy', 'Eve');
 
 INSERT INTO room (id, name, room_key) VALUES
-(1, 'Room 1', 'room1'),
+(1, 'Room 1', 'da'),
 (2, 'Room 2', 'room2'),
 (3, 'Room 3', 'room3'),
 (4, 'Room 4', 'room4'),
@@ -20,18 +20,17 @@ INSERT INTO room (id, name, room_key) VALUES
 (9, 'Room 9', 'room9'),
 (10, 'Room 10', 'room10');
 
-insert into room_list_username (room_id, list_username) values
-(1, 'user1@gmail.com'),
-(2, 'user1@gmail.com'),
-(3, 'user2@gmail.com'),
-(4, 'user2@gmail.com'),
-(5, 'user3@gmail.com'),
-(6, 'user3@gmail.com'),
-(7, 'user4@gmail.com'),
-(8, 'user4@gmail.com'),
-(9, 'user5@gmail.com'),
-(10,'user5@gmail.com');
-
+INSERT INTO room_list_username (room_id, username, list_index) VALUES
+(1, 'user1@gmail.com', 0),
+(2, 'user1@gmail.com', 0),
+(3, 'user2@gmail.com', 0),
+(4, 'user2@gmail.com', 0),
+(5, 'user3@gmail.com', 0),
+(6, 'user3@gmail.com', 0),
+(7, 'user4@gmail.com', 0),
+(8, 'user4@gmail.com', 0),
+(9, 'user5@gmail.com', 0),
+(10,'user5@gmail.com', 0);
 
 
 INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
@@ -57,14 +56,90 @@ INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
  '{"da.soil":{"feedId":3018520,"threshold_max":60.0,"threshold_min":30.0}}'),
 
 (8, 1, 'Smart Control 5', 'INACTIVE', 'CONTROL',
- '{"da.rgb":{"feedId":3018522,"threshold_max:10.0,"threshold_min":0.0}}');
+ '{"da.rgb":{"feedId":3018522,"threshold_max":10.0,"threshold_min":0.0}}');
+
+
+ -- Phòng 2
+ INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
+ (9, 2, 'Smart Control 2', 'INACTIVE', 'CONTROL',
+  '{"db.fan":{"feedId":3018530,"threshold_max":10.0,"threshold_min":0.0}}'),
+ (10, 2, 'Smart Control 3', 'INACTIVE', 'CONTROL',
+  '{"db.pump1":{"feedId":3018531,"threshold_max":10.0,"threshold_min":0.0}}'),
+ (11, 2, 'Smart Control 4', 'INACTIVE', 'CONTROL',
+  '{"db.pump2":{"feedId":3018532,"threshold_max":10.0,"threshold_min":0.0}}'),
+ (12, 2, 'Smart Sensor 1', 'INACTIVE', 'SENSOR',
+  '{"db.temp":{"feedId":3018533,"threshold_max":40.0,"threshold_min":14.0}}'),
+ (13, 2, 'Smart Sensor 2', 'INACTIVE', 'SENSOR',
+  '{"db.hum":{"feedId":3018534,"threshold_max":80.0,"threshold_min":60.0}}'),
+ (14, 2, 'Smart Sensor 3', 'INACTIVE', 'SENSOR',
+  '{"db.light":{"feedId":3018535,"threshold_max":80.0,"threshold_min":30.0}}'),
+ (15, 2, 'Smart Sensor 4', 'INACTIVE', 'SENSOR',
+  '{"db.soil":{"feedId":3018536,"threshold_max":60.0,"threshold_min":30.0}}'),
+ (16, 2, 'Smart Control 5', 'INACTIVE', 'CONTROL',
+  '{"db.rgb":{"feedId":3018537,"threshold_max":10.0,"threshold_min":0.0}}');
+
+ -- Phòng 3
+ INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
+ (17, 3, 'Smart Control 2', 'INACTIVE', 'CONTROL',
+  '{"dc.fan":{"feedId":3018540,"threshold_max":10.0,"threshold_min":0.0}}'),
+ (18, 3, 'Smart Control 3', 'INACTIVE', 'CONTROL',
+  '{"dc.pump1":{"feedId":3018541,"threshold_max":10.0,"threshold_min":0.0}}'),
+ (19, 3, 'Smart Control 4', 'INACTIVE', 'CONTROL',
+  '{"dc.pump2":{"feedId":3018542,"threshold_max":10.0,"threshold_min":0.0}}'),
+ (20, 3, 'Smart Sensor 1', 'INACTIVE', 'SENSOR',
+  '{"dc.temp":{"feedId":3018543,"threshold_max":40.0,"threshold_min":14.0}}'),
+ (21, 3, 'Smart Sensor 2', 'INACTIVE', 'SENSOR',
+  '{"dc.hum":{"feedId":3018544,"threshold_max":80.0,"threshold_min":60.0}}'),
+ (22, 3, 'Smart Sensor 3', 'INACTIVE', 'SENSOR',
+  '{"dc.light":{"feedId":3018545,"threshold_max":80.0,"threshold_min":30.0}}'),
+ (23, 3, 'Smart Sensor 4', 'INACTIVE', 'SENSOR',
+  '{"dc.soil":{"feedId":3018546,"threshold_max":60.0,"threshold_min":30.0}}'),
+ (24, 3, 'Smart Control 5', 'INACTIVE', 'CONTROL',
+  '{"dc.rgb":{"feedId":3018547,"threshold_max":10.0,"threshold_min":0.0}}');
+
+ -- Phòng 4
+ INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
+ (25, 4, 'Smart Control 2', 'INACTIVE', 'CONTROL',
+  '{"dd.fan":{"feedId":3018550,"threshold_max":10.0,"threshold_min":0.0}}'),
+ (26, 4, 'Smart Control 3', 'INACTIVE', 'CONTROL',
+  '{"dd.pump1":{"feedId":3018551,"threshold_max":10.0,"threshold_min":0.0}}'),
+ (27, 4, 'Smart Control 4', 'INACTIVE', 'CONTROL',
+  '{"dd.pump2":{"feedId":3018552,"threshold_max":10.0,"threshold_min":0.0}}'),
+ (28, 4, 'Smart Sensor 1', 'INACTIVE', 'SENSOR',
+  '{"dd.temp":{"feedId":3018553,"threshold_max":40.0,"threshold_min":14.0}}'),
+ (29, 4, 'Smart Sensor 2', 'INACTIVE', 'SENSOR',
+  '{"dd.hum":{"feedId":3018554,"threshold_max":80.0,"threshold_min":60.0}}'),
+ (30, 4, 'Smart Sensor 3', 'INACTIVE', 'SENSOR',
+  '{"dd.light":{"feedId":3018555,"threshold_max":80.0,"threshold_min":30.0}}'),
+ (31, 4, 'Smart Sensor 4', 'INACTIVE', 'SENSOR',
+  '{"dd.soil":{"feedId":3018556,"threshold_max":60.0,"threshold_min":30.0}}'),
+ (32, 4, 'Smart Control 5', 'INACTIVE', 'CONTROL',
+  '{"dd.rgb":{"feedId":3018557,"threshold_max":10.0,"threshold_min":0.0}}');
+
+ -- Phòng 5
+ INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
+ (33, 5, 'Smart Control 2', 'INACTIVE', 'CONTROL',
+  '{"de.fan":{"feedId":3018560,"threshold_max":10.0,"threshold_min":0.0}}'),
+ (34, 5, 'Smart Control 3', 'INACTIVE', 'CONTROL',
+  '{"de.pump1":{"feedId":3018561,"threshold_max":10.0,"threshold_min":0.0}}'),
+ (35, 5, 'Smart Control 4', 'INACTIVE', 'CONTROL',
+  '{"de.pump2":{"feedId":3018562,"threshold_max":10.0,"threshold_min":0.0}}'),
+ (36, 5, 'Smart Sensor 1', 'INACTIVE', 'SENSOR',
+  '{"de.temp":{"feedId":3018563,"threshold_max":40.0,"threshold_min":14.0}}'),
+ (37, 5, 'Smart Sensor 2', 'INACTIVE', 'SENSOR',
+  '{"de.hum":{"feedId":3018564,"threshold_max":80.0,"threshold_min":60.0}}'),
+ (38, 5, 'Smart Sensor 3', 'INACTIVE', 'SENSOR',
+  '{"de.light":{"feedId":3018565,"threshold_max":80.0,"threshold_min":30.0}}'),
+ (39, 5, 'Smart Sensor 4', 'INACTIVE', 'SENSOR',
+  '{"de.soil":{"feedId":3018566,"threshold_max":60.0,"threshold_min":30.0}}'),
+ (40, 5, 'Smart Control 5', 'INACTIVE', 'CONTROL',
+  '{"de.rgb":{"feedId":3018567,"threshold_max":10.0,"threshold_min":0.0}}');
 
 
 INSERT INTO device_trigger (status, value_send, threshold_condition, sensor_feed_key, control_feed_key) VALUES
 ('ACTIVE', '1', 'MAX', 'da.temp', 'da.fan'),
-
 ('ACTIVE', '1', 'MAX', 'da.soil', 'da.pump1'),
-('ACTIVE', '1', 'MAX', 'da.soil', 'da.pump2'),
+('ACTIVE', '1', 'MAX', 'da.soil', 'da.pump2');
 
 
 INSERT INTO log (log_type, feed_key, value, created_at) VALUES
