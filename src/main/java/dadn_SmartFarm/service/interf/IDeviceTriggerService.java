@@ -9,4 +9,6 @@ public interface IDeviceTriggerService {
     Response deleteTrigger(long id);
     Response updateTrigger(DeviceTriggerDTO deviceTriggerDTO);
     Response getTriggersByDeviceId(Long deviceId, Pageable pageable);
+    Response getSensorFeedsByRoom(long roomId);
+    Response getControlFeedsByRoom(long roomId);
 }

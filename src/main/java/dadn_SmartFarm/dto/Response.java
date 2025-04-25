@@ -3,6 +3,7 @@ package dadn_SmartFarm.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import dadn_SmartFarm.dto.DeviceDTO.DeviceDTO;
 import dadn_SmartFarm.dto.DeviceTriggerDTO.DeviceTriggerDTO;
+import dadn_SmartFarm.dto.DeviceTriggerDTO.FeedDTO;
 import dadn_SmartFarm.dto.LogDTO.LogDTO;
 import dadn_SmartFarm.model.DataInfo;
 import dadn_SmartFarm.model.DeviceTrigger;
@@ -33,6 +34,7 @@ public class Response {
     List<DeviceTriggerDTO> listDeviceTriggersDTO;
     List<DeviceDTO> listDeviceDTO;
     List<LogDTO> listLogDTO;
+    List<FeedDTO> listFeedDTO;
 
     //Encode key
     String encodedFeeds;

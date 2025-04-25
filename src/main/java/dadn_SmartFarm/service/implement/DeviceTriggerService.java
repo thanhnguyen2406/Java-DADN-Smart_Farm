@@ -1,15 +1,18 @@
 package dadn_SmartFarm.service.implement;
 
 import dadn_SmartFarm.dto.DeviceTriggerDTO.DeviceTriggerDTO;
+import dadn_SmartFarm.dto.DeviceTriggerDTO.FeedDTO;
 import dadn_SmartFarm.dto.Response;
 import dadn_SmartFarm.exception.AppException;
 import dadn_SmartFarm.exception.ErrorCode;
 import dadn_SmartFarm.mapper.DeviceTriggerMapper;
 import dadn_SmartFarm.model.Device;
 import dadn_SmartFarm.model.DeviceTrigger;
+import dadn_SmartFarm.model.enums.DeviceType;
 import dadn_SmartFarm.model.enums.Status;
 import dadn_SmartFarm.repository.DeviceRepository;
 import dadn_SmartFarm.repository.DeviceTriggerRepository;
+import dadn_SmartFarm.repository.RoomRepository;
 import dadn_SmartFarm.service.interf.IDeviceTriggerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ public class DeviceTriggerService implements IDeviceTriggerService {
     DeviceTriggerRepository deviceTriggerRepository;
     DeviceTriggerMapper deviceTriggerMapper;
     DeviceRepository deviceRepository;
+    RoomRepository roomRepository;
 
     @Override
     public Response addTrigger(DeviceTriggerDTO deviceTriggerDTO) {
@@ -114,6 +118,8 @@ public class DeviceTriggerService implements IDeviceTriggerService {
         }
     }
 
+
+
     @Override
     public Response getTriggersByDeviceId(Long deviceId, Pageable pageable) {
         try{
@@ -150,6 +156,89 @@ public class DeviceTriggerService implements IDeviceTriggerService {
         }
     }
 
+    @Override
+    public Response getSensorFeedsByRoom(long roomId) {
+        try {
+            if (!roomRepository.existsById(roomId)) {
+                throw new AppException(ErrorCode.ROOM_NOT_FOUND);
+            }
+            List<Device> deviceSensorList = deviceRepository.findByTypeAndRoomId(DeviceType.SENSOR, roomId);
+            List<FeedDTO> feedDTOList = new ArrayList<>();
+            for (Device deviceSensor : deviceSensorList) {
+                for (String feedKey : deviceSensor.getFeedsList().keySet()) {
+                    feedDTOList.add(FeedDTO.builder()
+                                    .feedKey(feedKey)
+                                    .deviceName(deviceSensor.getName())
+                                    .build());
+                }
+            }
+
+            if(feedDTOList.isEmpty()) {
+                return Response.builder()
+                        .code(200)
+                        .message("No sensor feeds of this room is found")
+                        .build();
+            }
+
+            return Response.builder()
+                    .code(200)
+                    .message("Sensor feeds of this room fetched successfully")
+                    .listFeedDTO(feedDTOList)
+                    .build();
+        } catch (AppException e) {
+            return Response.builder()
+                    .code(e.getErrorCode().getCode())
+                    .message(e.getErrorCode().getMessage())
+                    .build();
+        } catch (Exception e) {
+            return Response.builder()
+                    .code(500)
+                    .message("Error while get sensor feed: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public Response getControlFeedsByRoom(long roomId) {
+        try {
+            if (!roomRepository.existsById(roomId)) {
+                throw new AppException(ErrorCode.ROOM_NOT_FOUND);
+            }
+            List<Device> deviceSensorList = deviceRepository.findByTypeAndRoomId(DeviceType.CONTROL, roomId);
+            List<FeedDTO> feedDTOList = new ArrayList<>();
+            for (Device deviceSensor : deviceSensorList) {
+                for (String feedKey : deviceSensor.getFeedsList().keySet()) {
+                    feedDTOList.add(FeedDTO.builder()
+                            .feedKey(feedKey)
+                            .deviceName(deviceSensor.getName())
+                            .build());
+                }
+            }
+
+            if(feedDTOList.isEmpty()) {
+                return Response.builder()
+                        .code(200)
+                        .message("No control feeds of this room is found")
+                        .build();
+            }
+
+            return Response.builder()
+                    .code(200)
+                    .message("Control feeds of this room fetched successfully")
+                    .listFeedDTO(feedDTOList)
+                    .build();
+        } catch (AppException e) {
+            return Response.builder()
+                    .code(e.getErrorCode().getCode())
+                    .message(e.getErrorCode().getMessage())
+                    .build();
+        } catch (Exception e) {
+            return Response.builder()
+                    .code(500)
+                    .message("Error while get control feed: " + e.getMessage())
+                    .build();
+        }
+    }
 
     public void checkTrigger(String sensorKey, String controlKey) {
         if (deviceRepository.existsFeedKey(sensorKey) <= 0) {
