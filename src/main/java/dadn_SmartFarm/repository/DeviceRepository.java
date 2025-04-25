@@ -72,4 +72,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     Page<Device> findByRoomId(Long id, Pageable pageable);
 
     List<Device> findByStatus(Status status);
+
+    List<Device> findByTypeAndRoomId(DeviceType deviceType, long roomId);
 }
