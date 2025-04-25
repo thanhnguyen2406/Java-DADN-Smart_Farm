@@ -15,7 +15,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Room {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
     @Column(nullable = false)
@@ -25,5 +25,8 @@ public class Room {
     String roomKey;
 
     @ElementCollection
+    @CollectionTable(name = "room_list_username", joinColumns = @JoinColumn(name = "room_id"))
+    @Column(name = "username")
+    @OrderColumn(name = "list_index")
     List<String> listUsername;
 }
