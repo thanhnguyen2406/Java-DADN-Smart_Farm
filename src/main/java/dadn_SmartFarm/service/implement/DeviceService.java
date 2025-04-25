@@ -321,7 +321,7 @@ public class DeviceService implements IDeviceService {
             if (existingDevice.getStatus() == Status.ACTIVE) {
                 mqttService.connectDevice(existingDevice.getId(), existingDevice.getFeedsList());
             } else if (existingDevice.getStatus() == Status.INACTIVE) {
-                mqttService.disconnectDevice(existingDevice.getId());
+                mqttService.disconnectDevice(existingDevice.getId(), existingDevice.getFeedsList());
             }
         } else {
             existingDevice.getFeedsList().forEach((s, feedInfo) -> {
