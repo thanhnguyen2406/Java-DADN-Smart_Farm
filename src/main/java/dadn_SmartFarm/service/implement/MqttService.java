@@ -19,10 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
 
 @Service
@@ -46,6 +43,11 @@ public class MqttService {
     private boolean triggerValueFlag = false;
     private boolean isMqttConnected = false;
     private List<DeviceTrigger> deviceTriggerNowList = List.of();
+    static String RGB_FEEDKEY = ".rgb";
+    static String YELLOW_RGB = ".yellow";
+    static String GREEN_RGB = ".green";
+    static String RED_RGB = ".red";
+    static String OFF_RGB = ".off";
 
     private final Map<Long, MqttClient> deviceClients = new ConcurrentHashMap<>();
     private final Map<String, List<Double>> feedDataBuffer = new ConcurrentHashMap<>();
@@ -141,6 +143,7 @@ public class MqttService {
 
                 log.info("Device {} connected to MQTT feeds: {}", deviceId, feedsList.keySet());
 
+
             } catch (MqttException e) {
                 log.error("Error connecting device {}: {}", deviceId, e.getMessage());
             }
@@ -157,6 +160,7 @@ public class MqttService {
 
             String topic = username + "/feeds/" + feedKey;
             client.subscribe(topic);
+            connectRGB(deviceId, feedKey, "DEFAULT");
         } catch (MqttException e) {
             log.error("Error subscribing device {} to feed {}: {}", deviceId, feedKey, e.getMessage());
         }
@@ -181,14 +185,17 @@ public class MqttService {
         }
     }
 
-    public void disconnectDevice(Long deviceId) {
+    public void disconnectDevice(Long deviceId, Map<String, FeedInfo> feedsList) {
         executorService.submit(() -> {
             MqttClient client = deviceClients.remove(deviceId);
             if (client != null) {
                 try {
                     client.disconnect();
                     log.info("Device {} disconnected.", deviceId);
+
+                    feedsList.forEach((feedKey, feedId) -> connectRGB(deviceId, feedKey, "OFF"));
                     isMqttConnected = false;
+
                 } catch (MqttException e) {
                     log.error("Error disconnecting device {}: {}", deviceId, e.getMessage());
                 }
@@ -199,7 +206,7 @@ public class MqttService {
     @PreDestroy
     public void cleanup() {
         executorService.submit(() -> {
-            deviceClients.forEach((deviceId, client) -> disconnectDevice(deviceId));
+            deviceClients.forEach((deviceId, client) -> disconnectDevice(deviceId, new HashMap<>()));
             log.info("MQTT Service shutting down.");
         });
 
@@ -238,6 +245,7 @@ public class MqttService {
             deviceTriggerNowList.forEach((deviceTrigger) -> {
                 publishMessage(deviceId, deviceTrigger.getControlFeedKey(), deviceTrigger.getValueSend());
             });
+            connectRGB(deviceId, feedKey, Objects.equals(thresholdType, "MAX") ? "MAX" : "MIN");
 
             LogDTO logDTO = LogDTO.builder()
                     .feedKey(feedKey)
@@ -250,6 +258,7 @@ public class MqttService {
             deviceTriggerNowList.forEach((deviceTrigger) -> {
                 publishMessage(deviceId, deviceTrigger.getControlFeedKey(), "0");
             });
+            connectRGB(deviceId, feedKey, "DEFAULT");
             deviceTriggerNowList = null;
         }
     }
@@ -277,6 +286,20 @@ public class MqttService {
 
             feedDataBuffer.clear();
             feedLastReceivedTime.clear();
+        }
+    }
+
+    public void connectRGB(Long deviceId, String feedKey, String condition) {
+        String group = feedKey.split("\\.")[0];
+        String rgbFeedKey = group + RGB_FEEDKEY;
+        if (condition.equals("DEFAULT")) {
+            publishMessage(deviceId, rgbFeedKey,feedKey + GREEN_RGB);
+        } else if (condition.equals("MAX")) {
+            publishMessage(deviceId, rgbFeedKey,feedKey + RED_RGB);
+        } else if (condition.equals("MIN")) {
+            publishMessage(deviceId, rgbFeedKey,feedKey + YELLOW_RGB);
+        } else {
+            publishMessage(deviceId, rgbFeedKey,feedKey + OFF_RGB);
         }
     }
 

@@ -254,7 +254,7 @@
 - **Path variable**: long id
 - **Request Param**:
     - Page: defaultValue = 0
-    - Size: defaultValue = 5
+    - Size: defaultValue = 10
 - **Response**:
     - `200 OK`: Fetched successfully.
       ```json
@@ -599,6 +599,7 @@
             "message": "Trigger not found"     
           }
         ```
+      
 #### 4. Get trigger by Device Id
 - **URL**: `GET /smart-farm/triggers/device/{id}`
 - **Description**: Lấy ra toàn bộ trigger bằng device id.
@@ -642,7 +643,79 @@
          "message": "Device not found"     
       }
       ```
-      
+
+#### 5. Get feed Sensor by Room Id
+- **URL**: `GET /smart-farm/triggers/room-sensor/{id}`
+- **Description**: Lấy ra toàn bộ feed sensor thuộc room Id.
+- **Path variable**: long roomId
+  - **Response**:
+      - `200 OK`: Fetched successfully.
+        ```json
+        {
+            "code": 200,
+            "message": "Sensor feeds of this room fetched successfully",
+            "authenticated": false,
+            "listFeedDTO": [
+                {
+                    "feedKey": "room1.humid",
+                    "deviceName": "Smart Sensor 1"
+                },
+                {
+                    "feedKey": "room1.tempair",
+                    "deviceName": "Smart Sensor 1"
+                }
+            ]
+        }
+        ```
+      - `200 OK` No feeds found.
+        ```json
+        {
+           "code": 200,
+           "message": "No sensor feeds of this room is found"     
+        }
+        ```
+      - `404 Room not found`
+        ```json
+        {
+           "code": 404,
+           "message": "Room not found"     
+        }
+        ```
+
+#### 6. Get feed Control by Room Id
+- **URL**: `GET /smart-farm/triggers/room-control/{id}`
+- **Description**: Lấy ra toàn bộ feed control thuộc room Id.
+- **Path variable**: long roomId
+    - **Response**:
+        - `200 OK`: Fetched successfully.
+          ```json
+          {
+              "code": 200,
+              "message": "Control feeds of this room fetched successfully",
+              "authenticated": false,
+              "listFeedDTO": [
+                  {
+                      "feedKey": "room2.ventilationfan",
+                      "deviceName": "Smart Controller 1"
+                  }
+              ]
+          }
+          ```
+        - `200 OK` No feeds found.
+          ```json
+          {
+             "code": 200,
+             "message": "No control feeds of this room is found"     
+          }
+          ```
+        - `404 Room not found`
+          ```json
+          {
+             "code": 404,
+             "message": "Room not found"     
+          }
+          ```
+          
 ### Schedule APIs
 #### 1. Create schedule DAILY
 - **URL**: `POST /smart-farm/schedule/create`

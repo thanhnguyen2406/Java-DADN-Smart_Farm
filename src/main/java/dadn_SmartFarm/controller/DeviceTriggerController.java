@@ -35,11 +35,23 @@ public class DeviceTriggerController {
 
     @GetMapping("/device/{id}")
     public ResponseEntity<Response> getTriggersByDeviceId(
+            @PathVariable("id") long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @PathVariable("id") long id) {
+            @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Response response = deviceTriggerService.getTriggersByDeviceId(id, pageable);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @GetMapping("/room-sensor/{id}")
+    public ResponseEntity<Response> getSensorFeedsByRoom(@PathVariable("id") long roomId) {
+        Response response = deviceTriggerService.getSensorFeedsByRoom(roomId);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @GetMapping("/room-control/{id}")
+    public ResponseEntity<Response> getControlFeedsByRoom(@PathVariable("id") long roomId) {
+        Response response = deviceTriggerService.getControlFeedsByRoom(roomId);
         return ResponseEntity.status(response.getCode()).body(response);
     }
 }
