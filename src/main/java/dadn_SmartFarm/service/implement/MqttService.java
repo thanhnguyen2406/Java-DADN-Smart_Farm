@@ -12,6 +12,7 @@ import dadn_SmartFarm.service.interf.ILogService;
 import jakarta.annotation.PreDestroy;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.Synchronized;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.*;
@@ -52,6 +53,7 @@ public class MqttService {
     private final Map<Long, MqttClient> deviceClients = new ConcurrentHashMap<>();
     private final Map<String, List<Double>> feedDataBuffer = new ConcurrentHashMap<>();
     private final Map<String, Long> feedLastReceivedTime = new ConcurrentHashMap<>();
+    private final Map<String, String> lastRgbConditionMap = new ConcurrentHashMap<>();
 
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -166,7 +168,25 @@ public class MqttService {
         }
     }
 
+    /** Khoảng tối thiểu (ms) giữa hai lần publish liên tiếp */
+    private static final long MIN_PUBLISH_INTERVAL_MS = 1000;
+    /** Thời điểm lần publish cuối cùng */
+    private long lastPublishTimestamp = 0;
+
+    @Synchronized
     public void publishMessage(Long deviceId, String feedKey, String value) {
+        long now = System.currentTimeMillis();
+        long elapsed = now - lastPublishTimestamp;
+
+        if (elapsed < MIN_PUBLISH_INTERVAL_MS) {
+            long toWait = MIN_PUBLISH_INTERVAL_MS - elapsed;
+            try {
+                Thread.sleep(toWait);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
         try {
             if (!deviceClients.containsKey(deviceId)) {
                 log.error("Device {} is not connected. Cannot publish message.", deviceId);
@@ -235,17 +255,28 @@ public class MqttService {
     }
 
     private void handleThresholdExceeded(Long deviceId, String feedKey, String thresholdType, double value) {
-        if (!triggerValueFlag && (thresholdType.equals("MAX") || thresholdType.equals("MIN") )) {
+        String newCondition = switch (thresholdType) {
+            case "MAX" -> "MAX";
+            case "MIN" -> "MIN";
+            default -> "DEFAULT";
+        };
+
+        if (!triggerValueFlag && ("MAX".equals(newCondition) || "MIN".equals(newCondition))) {
             log.warn("Device {}: [{}] exceeded {} threshold with value {}", deviceId, feedKey, thresholdType, value);
             deviceTriggerNowList = deviceTriggerRepository.findBySensorFeedKeyAndStatusAndThresholdCondition(
                     feedKey,
                     Status.ACTIVE,
-                    thresholdType
+                    newCondition
             );
             deviceTriggerNowList.forEach((deviceTrigger) -> {
                 publishMessage(deviceId, deviceTrigger.getControlFeedKey(), deviceTrigger.getValueSend());
             });
-            connectRGB(deviceId, feedKey, Objects.equals(thresholdType, "MAX") ? "MAX" : "MIN");
+
+            String prev = lastRgbConditionMap.get(feedKey);
+            if (!newCondition.equals(prev)) {
+                connectRGB(deviceId, feedKey, newCondition);
+                lastRgbConditionMap.put(feedKey, newCondition);
+            }
 
             LogDTO logDTO = LogDTO.builder()
                     .feedKey(feedKey)
@@ -254,11 +285,19 @@ public class MqttService {
                     .build();
             logService.createLog(logDTO);
         }
-        else if (thresholdType.equals("DEFAULT") && !deviceTriggerNowList.isEmpty()) {
-            deviceTriggerNowList.forEach((deviceTrigger) -> {
-                publishMessage(deviceId, deviceTrigger.getControlFeedKey(), "0");
-            });
-            connectRGB(deviceId, feedKey, "DEFAULT");
+        else if ("DEFAULT".equals(newCondition)) {
+
+            if(deviceTriggerNowList != null && !deviceTriggerNowList.isEmpty()) {
+                deviceTriggerNowList.forEach((deviceTrigger) -> {
+                    publishMessage(deviceId, deviceTrigger.getControlFeedKey(), "0");
+                });
+            }
+
+            String prev = lastRgbConditionMap.get(feedKey);
+            if (!"DEFAULT".equals(prev)) {
+                connectRGB(deviceId, feedKey, "DEFAULT");
+                lastRgbConditionMap.put(feedKey, "DEFAULT");
+            }
             deviceTriggerNowList = null;
         }
     }

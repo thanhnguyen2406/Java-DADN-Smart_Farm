@@ -43,16 +43,16 @@ INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
 (3, 1, 'Smart Control 4', 'INACTIVE', 'CONTROL',
  '{"da.pump2":{"feedId":3018526,"threshold_max":10.0,"threshold_min":0.0}}'),
 
-(4, 1, 'Smart Sensor 1', 'INACTIVE', 'SENSOR',
+(4, 1, 'Smart Sensor 1', 'ACTIVE', 'SENSOR',
  '{"da.temp":{"feedId":3018518,"threshold_max":40.0,"threshold_min":14.0}}'),
 
-(5, 1, 'Smart Sensor 2', 'INACTIVE', 'SENSOR',
+(5, 1, 'Smart Sensor 2', 'ACTIVE', 'SENSOR',
  '{"da.hum":{"feedId":3018519,"threshold_max":80.0,"threshold_min":60.0}}'),
 
-(6, 1, 'Smart Sensor 3', 'INACTIVE', 'SENSOR',
+(6, 1, 'Smart Sensor 3', 'ACTIVE', 'SENSOR',
  '{"da.light":{"feedId":3018521,"threshold_max":80.0,"threshold_min":30.0}}'),
 
-(7, 1, 'Smart Sensor 4', 'INACTIVE', 'SENSOR',
+(7, 1, 'Smart Sensor 4', 'ACTIVE', 'SENSOR',
  '{"da.soil":{"feedId":3018520,"threshold_max":60.0,"threshold_min":30.0}}'),
 
 (8, 1, 'Smart Control 5', 'INACTIVE', 'CONTROL',
@@ -139,7 +139,6 @@ INSERT INTO device (id, room_id, name, status, type, feeds_list) VALUES
 INSERT INTO device_trigger (status, value_send, threshold_condition, sensor_feed_key, control_feed_key) VALUES
 ('ACTIVE', '1', 'MAX', 'da.temp', 'da.fan'),
 ('ACTIVE', '1', 'MAX', 'da.soil', 'da.pump1'),
-('ACTIVE', '1', 'MAX', 'da.soil', 'da.pump2');
 
 
 INSERT INTO log (log_type, feed_key, value, created_at) VALUES

@@ -55,19 +55,19 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
             '$[*]' COLUMNS (
                 feedKey VARCHAR(255) PATH '$'
             )
-        ) AS keys
+        ) AS k
         JOIN JSON_TABLE(
-            JSON_EXTRACT(d.feeds_list, CONCAT('$.\"', keys.feedKey, '\"')),
+            JSON_EXTRACT(d.feeds_list, CONCAT('$.\"', k.feedKey, '\"')),
             '$' COLUMNS (
                 feedId BIGINT PATH '$.feedId'
             )
-        ) AS values
-        ON values.feedId = :feedId
+        ) AS v
+        ON v.feedId = :feedId
     )
     LIMIT 1
     """, nativeQuery = true)
     Optional<Device> findDeviceByFeedIdInJson(@Param("feedId") Long feedId);
-    
+
     List<Device> findByTypeAndStatus(DeviceType type, Status status);
     Page<Device> findByRoomId(Long id, Pageable pageable);
 

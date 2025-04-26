@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @FieldDefaults (level = AccessLevel.PRIVATE)
 public class Statistic {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
     @NotNull
