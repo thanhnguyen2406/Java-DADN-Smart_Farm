@@ -160,7 +160,7 @@ public class MqttService {
 
             String topic = username + "/feeds/" + feedKey;
             client.subscribe(topic);
-            connectRGB(deviceId, feedKey, "DEFAULT");
+//            connectRGB(deviceId, feedKey, "DEFAULT");
         } catch (MqttException e) {
             log.error("Error subscribing device {} to feed {}: {}", deviceId, feedKey, e.getMessage());
         }
@@ -245,7 +245,7 @@ public class MqttService {
             deviceTriggerNowList.forEach((deviceTrigger) -> {
                 publishMessage(deviceId, deviceTrigger.getControlFeedKey(), deviceTrigger.getValueSend());
             });
-            connectRGB(deviceId, feedKey, Objects.equals(thresholdType, "MAX") ? "MAX" : "MIN");
+//            connectRGB(deviceId, feedKey, Objects.equals(thresholdType, "MAX") ? "MAX" : "MIN");
 
             LogDTO logDTO = LogDTO.builder()
                     .feedKey(feedKey)
@@ -254,11 +254,13 @@ public class MqttService {
                     .build();
             logService.createLog(logDTO);
         }
-        else if (thresholdType.equals("DEFAULT") && !deviceTriggerNowList.isEmpty()) {
-            deviceTriggerNowList.forEach((deviceTrigger) -> {
-                publishMessage(deviceId, deviceTrigger.getControlFeedKey(), "0");
-            });
-            connectRGB(deviceId, feedKey, "DEFAULT");
+        else if (thresholdType.equals("DEFAULT")) {
+            if(deviceTriggerNowList != null && !deviceTriggerNowList.isEmpty()) {
+                deviceTriggerNowList.forEach((deviceTrigger) -> {
+                    publishMessage(deviceId, deviceTrigger.getControlFeedKey(), "0");
+                });
+            }
+//            connectRGB(deviceId, feedKey, "DEFAULT");
             deviceTriggerNowList = null;
         }
     }

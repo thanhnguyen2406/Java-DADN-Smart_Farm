@@ -645,7 +645,6 @@ public class ScheduleService implements IScheduleService {
                 .findFirst()
                 .map(entry -> Map.of(entry.getKey(), entry.getValue()))
                 .orElse(Map.of());
-
         deviceService.updateDevice(DeviceDTO.builder()
                         .id(schedule.getDevice().getId())
                         .roomId(schedule.getDevice().getRoomId())
