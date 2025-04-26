@@ -50,7 +50,7 @@ public class DeviceController {
     public ResponseEntity<Response> getDevicesByRoomId(
             @PathVariable long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "7") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Response response = deviceService.getDevicesByRoomId(id, pageable);
         return ResponseEntity.status(response.getCode()).body(response);
@@ -59,7 +59,7 @@ public class DeviceController {
     @GetMapping("/unassign")
     public ResponseEntity<Response> getUnassignedDevices(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "7") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Response response = deviceService.getUnassignedDevices(pageable);
         return ResponseEntity.status(response.getCode()).body(response);
