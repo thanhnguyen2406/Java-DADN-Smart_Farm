@@ -168,10 +168,8 @@ public class MqttService {
         }
     }
 
-    /** Khoảng tối thiểu (ms) giữa hai lần publish liên tiếp */
     private static final long MIN_PUBLISH_INTERVAL_MS = 1000;
-    /** Thời điểm lần publish cuối cùng */
-    private long lastPublishTimestamp = 0;
+    private static final long lastPublishTimestamp = 0;
 
     @Synchronized
     public void publishMessage(Long deviceId, String feedKey, String value) {
@@ -207,15 +205,14 @@ public class MqttService {
 
     public void disconnectDevice(Long deviceId, Map<String, FeedInfo> feedsList) {
         executorService.submit(() -> {
-            MqttClient client = deviceClients.remove(deviceId);
+            MqttClient client = deviceClients.get(deviceId); // <-- giữ nguyên client trước
             if (client != null) {
                 try {
-                    client.disconnect();
-                    log.info("Device {} disconnected.", deviceId);
-
                     feedsList.forEach((feedKey, feedId) -> connectRGB(deviceId, feedKey, "OFF"));
+                    client.disconnect();
+                    deviceClients.remove(deviceId);
+                    log.info("Device {} disconnected.", deviceId);
                     isMqttConnected = false;
-
                 } catch (MqttException e) {
                     log.error("Error disconnecting device {}: {}", deviceId, e.getMessage());
                 }
@@ -332,13 +329,13 @@ public class MqttService {
         String group = feedKey.split("\\.")[0];
         String rgbFeedKey = group + RGB_FEEDKEY;
         if (condition.equals("DEFAULT")) {
-            publishMessage(deviceId, rgbFeedKey,feedKey + GREEN_RGB);
+            publishMessage(deviceId, rgbFeedKey,rgbFeedKey + GREEN_RGB);
         } else if (condition.equals("MAX")) {
-            publishMessage(deviceId, rgbFeedKey,feedKey + RED_RGB);
+            publishMessage(deviceId, rgbFeedKey,rgbFeedKey + RED_RGB);
         } else if (condition.equals("MIN")) {
-            publishMessage(deviceId, rgbFeedKey,feedKey + YELLOW_RGB);
+            publishMessage(deviceId, rgbFeedKey,rgbFeedKey + YELLOW_RGB);
         } else {
-            publishMessage(deviceId, rgbFeedKey,feedKey + OFF_RGB);
+            publishMessage(deviceId, rgbFeedKey,rgbFeedKey + OFF_RGB);
         }
     }
 
